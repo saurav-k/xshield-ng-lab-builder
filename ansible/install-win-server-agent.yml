@@ -1,0 +1,48 @@
+---
+- hosts: "{{ host | default('all') }}"
+  vars_prompt:
+    - name: agent_file
+      prompt: Agent filename
+      private: false
+
+    - name: deployment_key
+      prompt: Deployment key
+      private: false
+
+    - name: auto_upgrade
+      prompt: Auto upgrade [true/false]?
+      default: "true"
+      private: false
+
+    - name: vuln_scan
+      prompt: Enable vulnerability scan [true/false]?
+      default: "true"
+      private: false
+
+  tasks:
+  - name: Copy agent installer to host
+    ansible.windows.win_copy:
+      src: "{{ agent_file }}"
+      dest: C:\Windows\Temp\{{ agent_file | basename }}
+
+  - name: Create log directory
+    ansible.windows.win_file:
+      path: C:\ProgramData\Colortokens
+      state: directory
+
+  - name: Install agent on host
+    ansible.windows.win_package:
+      path: C:\Windows\Temp\{{ agent_file | basename }}
+      state: present
+      log_path: C:\ProgramData\Colortokens\ctagent_msi.log
+
+  - name: Register agent
+    ansible.windows.win_command: 
+      cmd: ctagent.exe register --domain={{ domain }} --agentType=server --deploymentKey={{ deployment_key }} --upgrade={{ auto_upgrade }} --enable-vulnerability-scan={{ vuln_scan }}
+      chdir: C:\Program Files\Colortokens\xshield-monitoring-agent
+
+  - name: Start agent
+    ansible.windows.win_command:
+      cmd: ctagent.exe start
+      chdir: C:\Program Files\Colortokens\xshield-monitoring-agent
+...

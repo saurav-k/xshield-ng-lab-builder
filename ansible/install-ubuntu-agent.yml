@@ -1,0 +1,58 @@
+---
+- hosts: "{{ host | default('all') }}"
+  remote_user: ubuntu
+  become: yes
+  vars_prompt:
+    - name: agent_file
+      prompt: Agent filename
+      private: false
+
+    - name: deployment_key
+      prompt: Deployment key
+      private: false
+
+    - name: auto_upgrade
+      prompt: Auto upgrade [true/false]?
+      default: "true"
+      private: false
+
+    - name: vuln_scan
+      prompt: Enable vulnerability scan [true/false]?
+      default: "true"
+      private: false
+
+  tasks:
+  - name: Install prerequisties
+    ansible.builtin.apt:
+      name: 
+        - libpcap-dev 
+        - nftables 
+        - iptables
+        - rpcbind 
+        - rsyslog
+      update_cache: yes
+
+  - name: Start services
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+    with_items:
+      - rsyslog
+      - nftables
+
+  - name: Copy agent installer to host
+    ansible.builtin.copy: src={{ agent_file }} dest=/tmp mode=0755
+
+  - name: Install agent on host
+    ansible.builtin.command: dpkg -i /tmp/{{ agent_file | basename }}
+
+  - name: Register agent
+    ansible.builtin.command: /etc/colortokens/ctagent register \
+        --domain="{{ domain }}" --agentType=server \
+        --deploymentKey={{ deployment_key }} --upgrade={{ auto_upgrade }} \
+        --enable-vulnerability-scan={{ vuln_scan }}
+
+  - name: Start agent
+    ansible.builtin.command: /etc/colortokens/ctagent start
+...

@@ -1,0 +1,8 @@
+---
+- hosts: "{{ host | default('all') }}"
+  remote_user: ubuntu
+  tasks:
+  - name: Uninstall agent from host
+    become: yes
+    ansible.builtin.copy: /etc/colortokens/ctagent remove -cleanserver
+...

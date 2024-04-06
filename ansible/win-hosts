@@ -1,0 +1,21 @@
+---
+all:
+  children:
+    prd_fs:
+      hosts:
+        prdfs1:
+          ansible_host: localhost
+          ansible_port: 12001
+        prdfs2:
+          ansible_host: localhost
+          ansible_port: 12002
+    dev_fs:
+      hosts:
+        devfs1:
+          ansible_host: localhost
+          ansible_port: 12101
+  vars:
+    ansible_connection: winrm
+    ansible_winrm_scheme: http
+    ansible_winrm_transport: ntlm
+    ansible_winrm_server_cert_validation: ignore

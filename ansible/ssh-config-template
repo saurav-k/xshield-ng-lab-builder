@@ -1,0 +1,21 @@
+#
+# SSH config file for the Acme environment.
+# Edit the IdentityFile and Bastion IP and rename this file as ssh-config
+# 
+
+Host * 
+    UserKnownHostsFile  /dev/null
+    StrictHostKeyChecking no
+    IdentityFile <pem file>
+    User ubuntu
+
+Host bastion
+    Hostname <bastion ip>
+    # For Ansible, to allow WinRM via SSH tunnelling.
+    LocalForward :12001 10.0.11.51:5985
+    LocalForward :12002 10.0.11.52:5985
+    LocalForward :12101 10.0.21.51:5985
+
+Host 10.0.*
+    ProxyJump ubuntu@bastion
+    ProxyCommand ssh -q -W %h:%p
