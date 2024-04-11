@@ -1,0 +1,18 @@
+# Sample config.txt file.  Edit this file and save it as config.txt
+#
+# (C) 2024, ColorTokens Inc.
+# Venky Raju
+
+# Your initials or short nickname (alpha only, no spaces)
+# This will be used as a prefix in all AWS resource names
+# and will be set as the Owner tag. 
+owner=
+
+# The Xshield domain.  Edit this if you are using the EU or Asia clusters.
+domain=https://ng.colortokens.com
+
+# Create an API key for your Xshield tenant and copy the parameter values here.
+tenantId=
+userId=
+fingerprint=
+privateKey=
