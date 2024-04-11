@@ -10,12 +10,12 @@ variable "loc_name" {
     default = "usw"
 }
 
-variable "owner_initials" {
+variable "owner" {
     description = "Your nickname or initials - to identify your AWS resources"
     type = string
     nullable = false
     validation {
-        condition = length(var.owner_initials) >=2
+        condition = length(var.owner) >=2
         error_message = "At least 2 characters,please!"
     }
 }
@@ -30,4 +30,29 @@ variable "linux_instance_type" {
     description = "EC2 instance type for Linux VMs"
     type = string
     default = "t3.small"
+}
+
+variable "xs_gatekeeper_pkg_url" {
+    description = "Debian package URL for the Gatekeeper"
+    type = string
+}
+
+variable "xs_agent_debian_pkg_url" {
+    description = "Debian package URL for the Host Agent"
+    type = string
+}
+
+variable "xs_agent_windows_pkg_url" {
+    description = "Debian package URL for the Host Agent"
+    type = string
+}
+
+variable "xs_domain" {
+    description = "Xshield domain (URL)"
+    type = string
+}
+
+variable "xs_deployment_key" {
+    description = "Xshield deployment key"
+    type = string
 }

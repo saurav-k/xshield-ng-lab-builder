@@ -92,9 +92,13 @@ resource "aws_instance" "gatekeeper-pri" {
   user_data = base64encode(templatefile("${path.module}/user_data_templates/gatekeeper_user_data.sh",
         {   
           hostname = "${var.hostname_prefix}pri",
-          gk_wan_ip = var.gk_wan_ip
-          gk_wan_gw = var.gk_wan_gw
-          gk_lan_ip = var.gk_lan_ip
+          gk_wan_ip = "${var.gk_wan_ip}${var.gk_wan_ip_nmask}",
+          gk_wan_gw = var.gk_wan_gw,
+          gk_lan_ip = "${var.gk_lan_ip}${var.gk_lan_ip_nmask}",
+          gk_lan_gw = var.gk_lan_ip,
+          gk_pkg_url = var.xs_gatekeeper_pkg_url,
+          xs_domain = var.xs_domain,
+          xs_deployment_key = var.xs_deployment_key
         }))
 }
 

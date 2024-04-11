@@ -21,8 +21,3 @@ cd /tmp
 wget https://ct-xshield-lab-assets.s3.amazonaws.com/wordpress/wp-install.sh
 sed -i "s/{PASSWORD}/${password}/;s/{DB_IP}/${db_ip}/" wp-install.sh
 at now + 2 minutes -f /tmp/wp-install.sh
-
-wget https://ct-xshield-lab-assets.s3.amazonaws.com/infra/agent.sh
-sed -i "s/{SIEM_IP}/${siem_ip}/;s/{ASSETMGR_IP}/${assetmgr_ip}/" agent.sh
-install -D agent.sh /var/opt/acme/agent.sh
-(crontab -l 2>/dev/null; echo "*/5 * * * *  /var/opt/acme/agent.sh" ) | crontab -

@@ -88,3 +88,18 @@ variable "assetmgr_ip" {
     description = "IP address of the Asset Manager"
     type = string
 }
+
+variable "xs_agent_debian_pkg_url" {
+    description = "Debian package URL for the Host Agent"
+    type = string
+}
+
+variable "xs_domain" {
+    description = "Xshield domain (URL)"
+    type = string
+}
+
+variable "xs_deployment_key" {
+    description = "Xshield deployment key"
+    type = string
+}

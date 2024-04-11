@@ -1,11 +1,11 @@
 locals {
 
-    name_prefix = "${var.owner_initials}-${var.lab_name}-${var.loc_name}"
+    name_prefix = "${var.owner}-${var.lab_name}-${var.loc_name}"
     hostname_prefix = "${var.lab_name}${var.loc_name}"
     domain_name = "acmesysinc.com"
 
-    key_name   = "xshield-lab-builder-${var.owner_initials}"
-    owner_name = "xshield-lab-builder-${var.owner_initials}"
+    key_name   = "xshield-lab-builder-${var.owner}"
+    owner_name = "xshield-lab-builder-${var.owner}"
 
     # VPC
     vpc_cidr_prefix = "10.0.10"
@@ -56,6 +56,10 @@ locals {
     prd_gk_lan_default_gw = "${local.vpc_cidr_prefix}.129" # Per AWS spec
     prd_gk_lan_ip         = "${local.vpc_cidr_prefix}.132"
     prd_gk_device_prefix  = "${local.vpc_cidr_prefix}.15" # 150-159
+
+
+    prd_gk_lan_ip_nmask   = regex("/[0-9]+", local.prd_gk_lan_subnet)
+    prd_gk_wan_ip_nmask   = regex("/[0-9]+", local.prd_private_subnet)
 }
 
 module "vpc" {
@@ -271,6 +275,9 @@ module "prd_hrm" {
   db_ip = local.prd_hrm_db_ip
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
+  xs_domain = var.xs_domain
+  xs_deployment_key = var.xs_deployment_key
+  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
   dmz_web_sg_id = aws_security_group.dmz_web_sg.id
@@ -296,6 +303,9 @@ module "dev_hrm" {
   db_ip = local.dev_hrm_db_ip
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
+  xs_domain = var.xs_domain
+  xs_deployment_key = var.xs_deployment_key
+  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
   dmz_web_sg_id = aws_security_group.dmz_web_sg.id
@@ -323,6 +333,9 @@ module "prd_crm" {
   db_ip = local.prd_crm_db_ip
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
+  xs_domain = var.xs_domain
+  xs_deployment_key = var.xs_deployment_key
+  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
   dmz_web_sg_id = aws_security_group.dmz_web_sg.id
@@ -350,6 +363,9 @@ module "dev_crm" {
   db_ip = local.dev_crm_db_ip
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
+  xs_domain = var.xs_domain
+  xs_deployment_key = var.xs_deployment_key
+  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
   dmz_web_sg_id = aws_security_group.dmz_web_sg.id
@@ -374,6 +390,9 @@ module "prd_fs" {
   fs_ip_prefix = local.prd_fs_prefix
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
+  xs_domain = var.xs_domain
+  xs_deployment_key = var.xs_deployment_key
+  xs_agent_windows_pkg_url = var.xs_agent_windows_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
@@ -397,6 +416,9 @@ module "dev_fs" {
   fs_ip_prefix = local.dev_fs_prefix
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
+  xs_domain = var.xs_domain
+  xs_deployment_key = var.xs_deployment_key
+  xs_agent_windows_pkg_url = var.xs_agent_windows_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
@@ -420,6 +442,9 @@ module "prd_wordpress" {
   db_ip = local.prd_wp_db_ip
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
+  xs_domain = var.xs_domain
+  xs_deployment_key = var.xs_deployment_key
+  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
   public_web_sg_id = aws_security_group.public_web_sg.id
@@ -444,6 +469,9 @@ module "dev_wordpress" {
   db_ip = local.dev_wp_db_ip
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
+  xs_domain = var.xs_domain
+  xs_deployment_key = var.xs_deployment_key
+  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
   public_web_sg_id = aws_security_group.public_web_sg.id
@@ -461,16 +489,24 @@ module "gatekeeper" {
   dependency = module.vpc.nat_is_ready
   vpc_id = module.vpc.vpc_id
   key_name = local.key_name
+
   gk_lan_ip = local.prd_gk_lan_ip
+  gk_lan_ip_nmask = local.prd_gk_lan_ip_nmask
+  gk_lan_gw = local.prd_gk_lan_ip
+
   gk_wan_ip = local.prd_gk_wan_ip
+  gk_wan_ip_nmask = local.prd_gk_wan_ip_nmask
   gk_wan_gw = local.prd_private_gw
+
+  xs_gatekeeper_pkg_url = var.xs_gatekeeper_pkg_url
+  xs_deployment_key = var.xs_deployment_key
+  xs_domain = var.xs_domain
 
   gk_lan_subnet = local.prd_gk_lan_subnet
   gk_wan_subnet_id = module.vpc.prd_private_subnet_id
 
   internal_sg_id = aws_security_group.internal_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-  
 }
 
 module "agentless_devices" {

@@ -46,7 +46,36 @@ variable "gk_wan_gw" {
 variable "gk_lan_ip" {
     description = "Gatekeeper LAN IP"
     type = string
-  
+}
+
+variable "gk_lan_gw" {
+    description = "Gatekeeper LAN Gateway"
+    type = string 
+}
+
+variable "gk_wan_ip_nmask" {
+    description = "Netmask for the Gatekeeper WAN IP"
+    type = string
+}
+
+variable "gk_lan_ip_nmask" {
+    description = "Netmask for the Gatekeeper LAN IP"
+    type = string
+}
+
+variable "xs_gatekeeper_pkg_url" {
+    description = "Gatekeeper package URL"
+    type = string
+}
+
+variable "xs_domain" {
+    description = "Xshield domain (URL)"
+    type = string
+}
+
+variable "xs_deployment_key" {
+    description = "Xshield deployment key"
+    type = string
 }
 
 variable "dependency" {

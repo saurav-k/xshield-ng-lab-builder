@@ -13,12 +13,22 @@ resource "aws_instance" "db" {
     Dependency = var.dependency
   }
 
-  user_data = base64encode(templatefile("${path.module}/user_data_templates/db_user_data.sh",
+  user_data = base64encode(join("\n", [
+      templatefile("${path.module}/user_data_templates/db_user_data.sh",
         {   hostname = "${var.hostname_prefix}db",
             password = var.password,
+            db_ip = var.db_ip,
+        }),
+      templatefile("${path.root}/common_user_data_templates/debian_agents.sh",
+        {  
             assetmgr_ip = var.assetmgr_ip,
-            siem_ip = var.siem_ip
-        }))
+            siem_ip = var.siem_ip,
+            xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url,
+            xs_domain = var.xs_domain,
+            xs_deployment_key = var.xs_deployment_key
+        })
+      ]
+    ))
 }
 
 resource "aws_instance" "webapp" {
@@ -36,11 +46,20 @@ resource "aws_instance" "webapp" {
     Dependency = var.dependency
   }
 
-  user_data = base64encode(templatefile("${path.module}/user_data_templates/webapp_user_data.sh",
+  user_data = base64encode(join("\n", [
+      templatefile("${path.module}/user_data_templates/webapp_user_data.sh",
         {   hostname = "${var.hostname_prefix}webapp",
             password = var.password,
             db_ip = var.db_ip,
+        }),
+      templatefile("${path.root}/common_user_data_templates/debian_agents.sh",
+        {  
             assetmgr_ip = var.assetmgr_ip,
-            siem_ip = var.siem_ip
-        }))
+            siem_ip = var.siem_ip,
+            xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url,
+            xs_domain = var.xs_domain,
+            xs_deployment_key = var.xs_deployment_key
+        })
+      ]
+    ))
 }

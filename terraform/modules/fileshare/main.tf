@@ -14,10 +14,19 @@ resource "aws_instance" "fileshare" {
     Dependency = var.dependency
   }
 
-  user_data = base64encode(templatefile("${path.module}/user_data_templates/fs_user_data.ps1",
+  user_data = base64encode(join("", [
+      templatefile("${path.module}/user_data_templates/fs_user_data.ps1",
         {   hostname = "${var.hostname_prefix}${count.index+1}",
             password = var.password,
+        }),
+      templatefile("${path.root}/common_user_data_templates/windows_agents.ps1",
+        {  
             assetmgr_ip = var.assetmgr_ip,
-            siem_ip = var.siem_ip
-        }))
+            siem_ip = var.siem_ip,
+            xs_agent_windows_pkg_url = var.xs_agent_windows_pkg_url,
+            xs_domain = var.xs_domain,
+            xs_deployment_key = var.xs_deployment_key
+        })
+      ]
+    ))
 }

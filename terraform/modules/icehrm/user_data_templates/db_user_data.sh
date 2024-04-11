@@ -21,8 +21,3 @@ mysql -u root hrms < icehrm_master_data.sql
 mysql -u root hrms < icehrm_sample_data.sql
 
 rm icehrmdb.sql icehrm_master_data.sql icehrm_sample_data.sql
-
-wget https://ct-xshield-lab-assets.s3.amazonaws.com/infra/agent.sh
-sed -i "s/{SIEM_IP}/${siem_ip}/;s/{ASSETMGR_IP}/${assetmgr_ip}/" agent.sh
-install -D agent.sh /var/opt/acme/agent.sh
-(crontab -l 2>/dev/null; echo "*/5 * * * *  /var/opt/acme/agent.sh" ) | crontab -

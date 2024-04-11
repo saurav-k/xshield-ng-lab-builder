@@ -16,7 +16,3 @@ sed -i "s/crm_db_host/${db_ip}/;s/crm_db_password/${password}/" /var/www/html/Su
 sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/SuiteCRM|g' /etc/apache2/sites-enabled/000-default.conf
 sudo systemctl restart apache2.service
 
-wget https://ct-xshield-lab-assets.s3.amazonaws.com/infra/agent.sh
-sed -i "s/{SIEM_IP}/${siem_ip}/;s/{ASSETMGR_IP}/${assetmgr_ip}/" agent.sh
-install -D agent.sh /var/opt/acme/agent.sh
-(crontab -l 2>/dev/null; echo "*/5 * * * *  /var/opt/acme/agent.sh" ) | crontab -
