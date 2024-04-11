@@ -8,6 +8,12 @@
 # and will be set as the Owner tag. 
 owner=
 
+# AWS region to deploy into.
+aws-region=us-east-1
+
+# AWS credentials profile
+aws-profile=default
+
 # The Xshield domain.  Edit this if you are using the EU or Asia clusters.
 domain=https://ng.colortokens.com
 
