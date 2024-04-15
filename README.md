@@ -115,7 +115,7 @@ git clone https://github.com/ColorTokens-Labs/xshield-ng-lab-builder.git
 <summary>Configure</summary>
 <p>
 
-Edit the configuration file [a relative link](config.txt.sample) and fill in the
+Edit the configuration file [config.txt.sample](config.txt.sample) and fill in the
 fields.
 <p>
 
