@@ -1,12 +1,12 @@
-# A sample enterprise environment for Xshield
+# A sample enterprise lab for Xshield
 
 ![alt](images/lab-env.png)
 
-This environmet consists of EC2 instances deployed using Terraform in any AWS region of your choosing.  It represents two environments with a mix of Ubuntu Linux and Microsoft Windows servers, and also includes three "legacy" systems served by a ColorTokens Gatekeeper appliance.  Built-in traffic generators send HTTP requests to the CRM, HRMS and Wordpress front-ends.  Infrastructure services include a SIEM, a vulnerability scanner, and an Inventory Management system.
+This lab consists of EC2 instances deployed using Terraform in any AWS region of your choosing.  It represents two environments with a mix of Ubuntu Linux and Microsoft Windows servers, and also includes three "legacy" systems served by a ColorTokens Gatekeeper appliance.  Built-in traffic generators send HTTP requests to the CRM, HRMS and Wordpress front-ends.  Infrastructure services include a SIEM, a vulnerability scanner, and an Inventory Management system.
 
-Xshield agents are deployed during Terraform-ation, and Ansible scripts are also included if you decommision the agents from the Xshield console, and would like to re-install them withot destroying and rebuilding the environment.
+Xshield agents are deployed during Terraform-ation, and optional Ansible scripts are also included. The Ansible scripts are useful if you decommision the agents from the Xshield console, and would like to re-install them withot destroying and rebuilding the environment.
 
-You may use your own macOS or Windows system to run Terraform and Ansible from, or deploy a small Ubuntu server VM.
+You may use your own macOS or Windows system to execute Terraform (and Ansible), or deploy a small Ubuntu server VM.
 
 ## Setup the necessary tools
 
