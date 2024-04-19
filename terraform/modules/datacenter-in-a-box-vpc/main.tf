@@ -58,9 +58,9 @@ resource "aws_subnet" "prd_public_subnet" {
   }
 }
 
-resource "aws_subnet" "dev_public_subnet" {
+resource "aws_subnet" "tst_public_subnet" {
   vpc_id            = aws_vpc.vpc.id
-  cidr_block        = var.dev_public_subnet
+  cidr_block        = var.tst_public_subnet
   availability_zone = data.aws_availability_zones.available.names.0
   map_public_ip_on_launch = true
 
@@ -83,10 +83,10 @@ resource "aws_subnet" "prd_private_subnet" {
   }
 }
 
-resource "aws_subnet" "dev_private_subnet" {
+resource "aws_subnet" "tst_private_subnet" {
 
   vpc_id            = aws_vpc.vpc.id
-  cidr_block        = var.dev_private_subnet
+  cidr_block        = var.tst_private_subnet
   availability_zone = data.aws_availability_zones.available.names.0
 
   tags = {
@@ -132,9 +132,9 @@ resource "aws_route_table_association" "assoc_rt_igw_prd_public" {
   route_table_id = aws_route_table.rt_igw.id
 }
 
-resource "aws_route_table_association" "assoc_rt_igw_dev_public" {
+resource "aws_route_table_association" "assoc_rt_igw_tst_public" {
 
-  subnet_id      = aws_subnet.dev_public_subnet.id
+  subnet_id      = aws_subnet.tst_public_subnet.id
   route_table_id = aws_route_table.rt_igw.id
 }
 
@@ -183,8 +183,8 @@ resource "aws_route_table_association" "assoc_rt_natgw_prd_private" {
   route_table_id  = aws_route_table.rt_nat_gw.id
 }
 
-resource "aws_route_table_association" "assoc_rt_natgw_dev_private" {
+resource "aws_route_table_association" "assoc_rt_natgw_tst_private" {
 
-  subnet_id       = aws_subnet.dev_private_subnet.id
+  subnet_id       = aws_subnet.tst_private_subnet.id
   route_table_id  = aws_route_table.rt_nat_gw.id
 }

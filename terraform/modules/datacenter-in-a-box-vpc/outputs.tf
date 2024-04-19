@@ -13,9 +13,9 @@ output "prd_public_subnet_id" {
     value = aws_subnet.prd_public_subnet.id
 }
 
-output "dev_public_subnet_id" {
+output "tst_public_subnet_id" {
     description = "The DEV public subnet id"
-    value = aws_subnet.dev_public_subnet.id
+    value = aws_subnet.tst_public_subnet.id
 }
 
 output "prd_private_subnet_id" {
@@ -23,9 +23,9 @@ output "prd_private_subnet_id" {
     value = aws_subnet.prd_private_subnet.id
 }
 
-output "dev_private_subnet_id" {
+output "tst_private_subnet_id" {
     description = "The DEV private subnet id"
-    value = aws_subnet.dev_private_subnet.id
+    value = aws_subnet.tst_private_subnet.id
 }
 
 output "nat_is_ready" {

@@ -26,10 +26,10 @@ locals {
     prd_wp_webapp_ip    = "${local.vpc_cidr_prefix}.22"
 
     # Dev Public IPs
-    dev_public_subnet   = "${local.vpc_cidr_prefix}.32/28"
-    dev_hrm_web_ip      = "${local.vpc_cidr_prefix}.36"
-    dev_crm_web_ip      = "${local.vpc_cidr_prefix}.37"
-    dev_wp_webapp_ip    = "${local.vpc_cidr_prefix}.38"
+    tst_public_subnet   = "${local.vpc_cidr_prefix}.32/28"
+    tst_hrm_web_ip      = "${local.vpc_cidr_prefix}.36"
+    tst_crm_web_ip      = "${local.vpc_cidr_prefix}.37"
+    tst_wp_webapp_ip    = "${local.vpc_cidr_prefix}.38"
 
     # Prod Private IPs
     prd_private_subnet  = "${local.vpc_cidr_prefix}.64/27"
@@ -43,13 +43,13 @@ locals {
     prd_fs_prefix       = "${local.vpc_cidr_prefix}.9"    # 90-94
 
     # Dev Private IPs
-    dev_private_subnet  = "${local.vpc_cidr_prefix}.96/27"
-    dev_hrm_app_ip      = "${local.vpc_cidr_prefix}.101"
-    dev_hrm_db_ip       = "${local.vpc_cidr_prefix}.102"
-    dev_wp_db_ip        = "${local.vpc_cidr_prefix}.103"
-    dev_crm_db_ip       = "${local.vpc_cidr_prefix}.104"
-    dev_crm_app_prefix  = "${local.vpc_cidr_prefix}.11"   # 110-119
-    dev_fs_prefix       = "${local.vpc_cidr_prefix}.12"   # 120-126
+    tst_private_subnet  = "${local.vpc_cidr_prefix}.96/27"
+    tst_hrm_app_ip      = "${local.vpc_cidr_prefix}.101"
+    tst_hrm_db_ip       = "${local.vpc_cidr_prefix}.102"
+    tst_wp_db_ip        = "${local.vpc_cidr_prefix}.103"
+    tst_crm_db_ip       = "${local.vpc_cidr_prefix}.104"
+    tst_crm_app_prefix  = "${local.vpc_cidr_prefix}.11"   # 110-119
+    tst_fs_prefix       = "${local.vpc_cidr_prefix}.12"   # 120-126
 
     # Gatekeeper LAN IPs
     prd_gk_lan_subnet     = "${local.vpc_cidr_prefix}.128/27"
@@ -76,8 +76,8 @@ module "vpc" {
     dmz_public_subnet = local.dmz_public_subnet
     prd_public_subnet = local.prd_public_subnet
     prd_private_subnet = local.prd_private_subnet
-    dev_public_subnet = local.dev_public_subnet
-    dev_private_subnet = local.dev_private_subnet
+    tst_public_subnet = local.tst_public_subnet
+    tst_private_subnet = local.tst_private_subnet
 }
 
 resource "random_password" "password" {
@@ -225,8 +225,10 @@ module "infra" {
 
   source = "./modules/infra"
 
-  depends_on = [module.prd_crm.crm_public_ip, module.prd_hrm.hrm_public_ip,
-                module.dev_crm.hrm_public_ip, module.dev_hrm.hrm_public_ip]
+  depends_on = [
+      module.prd_crm.crm_public_ip, module.prd_hrm.hrm_public_ip, module.prd_portal.portal_public_ip,
+      module.tst_crm.crm_public_ip, module.tst_hrm.hrm_public_ip, module.tst_portal.portal_public_ip
+    ]
 
   ami = data.aws_ami.ubuntu_22_04.id
   owner_name = local.owner_name
@@ -247,13 +249,13 @@ module "infra" {
 
   resource_subnets = [local.prd_public_subnet, 
                       local.prd_private_subnet,
-                      local.dev_public_subnet,
-                      local.dev_private_subnet]
+                      local.tst_public_subnet,
+                      local.tst_private_subnet]
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 
-  web_server_ip_list = [module.prd_crm.crm_public_ip, module.dev_crm.crm_public_ip,
-                        module.prd_hrm.hrm_public_ip, module.dev_hrm.hrm_public_ip,
-                        module.prd_wordpress.wordpress_public_ip, module.dev_wordpress.wordpress_public_ip]
+  web_server_ip_list = [module.prd_crm.crm_public_ip, module.tst_crm.crm_public_ip,
+                        module.prd_hrm.hrm_public_ip, module.tst_hrm.hrm_public_ip,
+                        module.prd_portal.wordpress_public_ip, module.tst_portal.wordpress_public_ip]
 }
 
 module "prd_hrm" {
@@ -284,23 +286,23 @@ module "prd_hrm" {
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
-module "dev_hrm" {
+module "tst_hrm" {
 
   source = "./modules/icehrm"
 
   ami = data.aws_ami.ubuntu_22_04.id
   owner_name = local.owner_name
   password = random_password.password.result
-  name_prefix = "${local.name_prefix}-dev-hrm"
-  hostname_prefix = "${local.hostname_prefix}devhrm"
+  name_prefix = "${local.name_prefix}-tst-hrm"
+  hostname_prefix = "${local.hostname_prefix}tsthrm"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.dev_private_subnet_id
-  public_subnet_id = module.vpc.dev_public_subnet_id
+  private_subnet_id = module.vpc.tst_private_subnet_id
+  public_subnet_id = module.vpc.tst_public_subnet_id
   key_name = local.key_name
 
-  web_ip = local.dev_hrm_web_ip
-  app_ip = local.dev_hrm_app_ip
-  db_ip = local.dev_hrm_db_ip
+  web_ip = local.tst_hrm_web_ip
+  app_ip = local.tst_hrm_app_ip
+  db_ip = local.tst_hrm_db_ip
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
   xs_domain = var.xs_domain
@@ -342,25 +344,25 @@ module "prd_crm" {
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
-module "dev_crm" {
+module "tst_crm" {
 
   source = "./modules/suitecrm"
 
   ami = data.aws_ami.ubuntu_22_04.id
   owner_name = local.owner_name
   password = random_password.password.result
-  name_prefix = "${local.name_prefix}-dev-crm"
-  hostname_prefix = "${local.hostname_prefix}devcrm"
+  name_prefix = "${local.name_prefix}-tst-crm"
+  hostname_prefix = "${local.hostname_prefix}tstcrm"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.dev_private_subnet_id
-  public_subnet_id = module.vpc.dev_public_subnet_id
+  private_subnet_id = module.vpc.tst_private_subnet_id
+  public_subnet_id = module.vpc.tst_public_subnet_id
   key_name = local.key_name
 
   app_server_count = 1
 
-  web_ip = local.dev_crm_web_ip
-  app_ip_prefix = local.dev_crm_app_prefix
-  db_ip = local.dev_crm_db_ip
+  web_ip = local.tst_crm_web_ip
+  app_ip_prefix = local.tst_crm_app_prefix
+  db_ip = local.tst_crm_db_ip
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
   xs_domain = var.xs_domain
@@ -398,22 +400,22 @@ module "prd_fs" {
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
-module "dev_fs" {
+module "tst_fs" {
 
   source = "./modules/fileshare"
 
   ami = data.aws_ami.win2019.id
   owner_name = local.owner_name
   password = random_password.password.result
-  name_prefix = "${local.name_prefix}-dev-fs"
-  hostname_prefix = "${local.hostname_prefix}devfs"
+  name_prefix = "${local.name_prefix}-tst-fs"
+  hostname_prefix = "${local.hostname_prefix}tstfs"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.dev_private_subnet_id
+  private_subnet_id = module.vpc.tst_private_subnet_id
   key_name = local.key_name
 
   fs_server_count = 1
 
-  fs_ip_prefix = local.dev_fs_prefix
+  fs_ip_prefix = local.tst_fs_prefix
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
   xs_domain = var.xs_domain
@@ -424,15 +426,15 @@ module "dev_fs" {
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
-module "prd_wordpress" {
+module "prd_portal" {
 
   source = "./modules/wordpress"
 
   ami = data.aws_ami.ubuntu_22_04.id
   owner_name = local.owner_name
   password = random_password.password.result
-  name_prefix = "${local.name_prefix}-prd-wp"
-  hostname_prefix = "${local.hostname_prefix}prdwp"
+  name_prefix = "${local.name_prefix}-prd-prtl"
+  hostname_prefix = "${local.hostname_prefix}prdprtl"
   dependency = module.vpc.nat_is_ready
   private_subnet_id = module.vpc.prd_private_subnet_id
   public_subnet_id = module.vpc.prd_public_subnet_id
@@ -451,22 +453,22 @@ module "prd_wordpress" {
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
-module "dev_wordpress" {
+module "tst_portal" {
 
   source = "./modules/wordpress"
 
   ami = data.aws_ami.ubuntu_22_04.id
   owner_name = local.owner_name
   password = random_password.password.result
-  name_prefix = "${local.name_prefix}-dev-wp"
-  hostname_prefix = "${local.hostname_prefix}devwp"
+  name_prefix = "${local.name_prefix}-tst-prtl"
+  hostname_prefix = "${local.hostname_prefix}tstprtl"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.dev_private_subnet_id
-  public_subnet_id = module.vpc.dev_public_subnet_id
+  private_subnet_id = module.vpc.tst_private_subnet_id
+  public_subnet_id = module.vpc.tst_public_subnet_id
   key_name = local.key_name
 
-  webapp_ip = local.dev_wp_webapp_ip
-  db_ip = local.dev_wp_db_ip
+  webapp_ip = local.tst_wp_webapp_ip
+  db_ip = local.tst_wp_db_ip
   siem_ip = local.siem_ip
   assetmgr_ip = local.asset_mgr_ip
   xs_domain = var.xs_domain
@@ -485,7 +487,7 @@ module "gatekeeper" {
   ami = data.aws_ami.ubuntu_22_04.id
   owner_name = local.owner_name
   name_prefix = "${local.name_prefix}-gk"
-  hostname_prefix = "${local.hostname_prefix}gk"
+  hostname_prefix = "${local.hostname_prefix}gx"
   dependency = module.vpc.nat_is_ready
   vpc_id = module.vpc.vpc_id
   key_name = local.key_name

@@ -43,12 +43,12 @@ variable "prd_private_subnet" {
     type = string 
 }
 
-variable "dev_public_subnet" {
+variable "tst_public_subnet" {
     description = "The CIDR block for the Prod public subnet"
     type = string 
 }
 
-variable "dev_private_subnet" {
+variable "tst_private_subnet" {
     description = "The CIDR block for the Prod private subnet"
     type = string 
 }
