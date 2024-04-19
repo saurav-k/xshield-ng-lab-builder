@@ -48,7 +48,7 @@ resource "aws_instance" "app" {
 
   user_data = base64encode(join("\n", [
       templatefile("${path.module}/user_data_templates/app_user_data.sh",
-        {   hostname = "${var.hostname_prefix}app",
+        {   hostname = "${var.hostname_prefix}app${count.index+1}",
             password = var.password,
             db_ip = var.db_ip,
         }),
