@@ -8,14 +8,14 @@ output "pem" {
     value = "${path.cwd}/${local_file.ssh_pem_file.filename}"
 }
 
-output "wordpress_prd_url" {
-    description = "Wordpress Prod URL"
-    value = "https://${module.prd_wordpress.wordpress_public_ip}"
+output "portal_prd_url" {
+    description = "Portal Prod URL"
+    value = "https://${module.prd_portal.wordpress_public_ip}"
 }
 
-output "wordpress_dev_url" {
-    description = "Wordpress Dev URL"
-    value = "https://${module.dev_wordpress.wordpress_public_ip}"
+output "portal_tst_url" {
+    description = "Portal Test URL"
+    value = "https://${module.tst_portal.wordpress_public_ip}"
 }
 
 output "password" {
