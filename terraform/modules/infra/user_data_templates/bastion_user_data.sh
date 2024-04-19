@@ -7,7 +7,7 @@ apt update
 cd /tmp
 
 # Vulnerability scanner simulator
-apt install -y nmap
+apt install -y nmap netcat
 mkdir -p /opt/acme
 echo "${nmap_subnets}" > /opt/acme/subnets
 (crontab -l 2>/dev/null; echo "0 */1 * * * nmap -sU -sS -S ${vuln_scanner_ip} -iL /opt/acme/subnets  > /var/log/scanner.out" ) | crontab -

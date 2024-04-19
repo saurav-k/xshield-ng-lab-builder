@@ -1,3 +1,4 @@
+apt install -y netcat
 wget https://ct-xshield-lab-assets.s3.amazonaws.com/infra/agent.sh
 sed -i "s/{SIEM_IP}/${siem_ip}/;s/{ASSETMGR_IP}/${assetmgr_ip}/" agent.sh
 install -D agent.sh /var/opt/acme/agent.sh
