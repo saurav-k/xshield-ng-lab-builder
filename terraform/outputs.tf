@@ -1,6 +1,26 @@
-output "bastion_ip" {
-    description = "Public IP of the Bastion"
+output "bastion_public_ip" {
+    description = "Bastion Public IP"
     value = aws_eip.bastion_eip.public_ip
+}
+
+output "bastion_ip" {
+    description = "Bastion IP"
+    value = local.bastion_ip
+}
+
+output "asset_mgr_ip" {
+    description = "Asset Manager IP"
+    value = local.asset_mgr_ip
+}
+
+output "vuln_scanner_ip" {
+    description = "Vuln Scanner IP"
+    value = local.vuln_scanner_ip
+}
+
+output "siem_ip" {
+    description = "SIEM IP"
+    value = local.siem_ip
 }
 
 output "pem" {
