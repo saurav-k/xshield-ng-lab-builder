@@ -8,58 +8,73 @@ locals {
     owner_name = "xshield-lab-builder-${var.owner}"
 
     # VPC
-    vpc_cidr_prefix = "10.0.10"
+    vpc_cidr_prefix = "10.0"
 
-    # DMZ IPs
-    dmz_public_subnet   = "${local.vpc_cidr_prefix}.0/28"
-    upstream_dns_server = "${local.vpc_cidr_prefix}.2" 
-    bastion_ip          = "${local.vpc_cidr_prefix}.4"
-    siem_ip             = "${local.vpc_cidr_prefix}.5"
-    asset_mgr_ip        = "${local.vpc_cidr_prefix}.6"
-    vuln_scanner_ip     = "${local.vpc_cidr_prefix}.7"
-    nat_gw_ip           = "${local.vpc_cidr_prefix}.8"
+    # Subnets
+    public_subnet_prefix  = "${local.vpc_cidr_prefix}.10"
+    public_subnet_cidr    = "${local.public_subnet_prefix}.0/28"
 
-    # Prod Public IPs
-    prd_public_subnet   = "${local.vpc_cidr_prefix}.16/28"
-    prd_hrm_web_ip      = "${local.vpc_cidr_prefix}.20"
-    prd_crm_web_ip      = "${local.vpc_cidr_prefix}.21"
-    prd_wp_webapp_ip    = "${local.vpc_cidr_prefix}.22"
+    private_subnet_prefix = "${local.vpc_cidr_prefix}.20"
+    private_subnet_cidr   = "${local.private_subnet_prefix}.0/26"
 
-    # Dev Public IPs
-    tst_public_subnet   = "${local.vpc_cidr_prefix}.32/28"
-    tst_hrm_web_ip      = "${local.vpc_cidr_prefix}.36"
-    tst_crm_web_ip      = "${local.vpc_cidr_prefix}.37"
-    tst_wp_webapp_ip    = "${local.vpc_cidr_prefix}.38"
+    gk_subnet_prefix      = "${local.vpc_cidr_prefix}.30"
+    gk_subnet_cidr        = "${local.gk_subnet_prefix}.0/24"
 
-    # Prod Private IPs
-    prd_private_subnet  = "${local.vpc_cidr_prefix}.64/27"
-    prd_private_gw      = "${local.vpc_cidr_prefix}.65"   # Per AWS spec
-    prd_hrm_app_ip      = "${local.vpc_cidr_prefix}.68"
-    prd_hrm_db_ip       = "${local.vpc_cidr_prefix}.69"
-    prd_crm_app_prefix  = "${local.vpc_cidr_prefix}.7"    # 70-79
-    prd_crm_db_ip       = "${local.vpc_cidr_prefix}.80"
-    prd_wp_db_ip        = "${local.vpc_cidr_prefix}.81"
-    prd_gk_wan_ip       = "${local.vpc_cidr_prefix}.82"
-    prd_fs_prefix       = "${local.vpc_cidr_prefix}.9"    # 90-94
+    # AWS IPs
+    upstream_dns_server   = "${local.vpc_cidr_prefix}.0.2"
+    aws_nat_gw_ip         = "${local.public_subnet_prefix}.4"
 
-    # Dev Private IPs
-    tst_private_subnet  = "${local.vpc_cidr_prefix}.96/27"
-    tst_hrm_app_ip      = "${local.vpc_cidr_prefix}.101"
-    tst_hrm_db_ip       = "${local.vpc_cidr_prefix}.102"
-    tst_wp_db_ip        = "${local.vpc_cidr_prefix}.103"
-    tst_crm_db_ip       = "${local.vpc_cidr_prefix}.104"
-    tst_crm_app_prefix  = "${local.vpc_cidr_prefix}.11"   # 110-119
-    tst_fs_prefix       = "${local.vpc_cidr_prefix}.12"   # 120-126
+    # Infra - DMZ Gateway
+    web_gw_ip             = "${local.public_subnet_prefix}.5"     # Gateway for all web servers and K8s
 
-    # Gatekeeper LAN IPs
-    prd_gk_lan_subnet     = "${local.vpc_cidr_prefix}.128/27"
-    prd_gk_lan_default_gw = "${local.vpc_cidr_prefix}.129" # Per AWS spec
-    prd_gk_lan_ip         = "${local.vpc_cidr_prefix}.132"
-    prd_gk_device_prefix  = "${local.vpc_cidr_prefix}.15" # 150-159
+    # Infra - Multipurpose Server (has 4 interfaces)
+    bastion_ip            = "${local.public_subnet_prefix}.6"      # Multipurpose VM 1 Intf 1
+    siem_ip               = "${local.public_subnet_prefix}.7"      # Multipurpose VM 1 Intf 2
+    asset_mgr_ip          = "${local.public_subnet_prefix}.8"      # Multipurpose VM 1 Intf 3
+    vuln_scanner_ip       = "${local.public_subnet_prefix}.9"      # Multipurpose VM 1 Intf 4
 
+    # Kubernetes cluster
+    kind_ip               = "${local.public_subnet_prefix}.10"
+    
+    # HRM IPs
+    prd_hrm_web_ip        = "${local.private_subnet_prefix}.4"
+    prd_hrm_app_ip        = "${local.private_subnet_prefix}.5"
+    prd_hrm_db_ip         = "${local.private_subnet_prefix}.6"
+    tst_hrm_web_ip        = "${local.private_subnet_prefix}.7"
+    tst_hrm_app_ip        = "${local.private_subnet_prefix}.8"
+    tst_hrm_db_ip         = "${local.private_subnet_prefix}.9"
 
-    prd_gk_lan_ip_nmask   = regex("/[0-9]+", local.prd_gk_lan_subnet)
-    prd_gk_wan_ip_nmask   = regex("/[0-9]+", local.prd_private_subnet)
+    # CRM IPs
+    prd_crm_web_ip        = "${local.private_subnet_prefix}.10"
+    prd_crm_app_prefix    = "${local.private_subnet_prefix}.1"    # 11-18
+    prd_crm_db_ip         = "${local.private_subnet_prefix}.19"
+    tst_crm_web_ip        = "${local.private_subnet_prefix}.20"
+    tst_crm_app_prefix    = "${local.private_subnet_prefix}.2"    # 21-28
+    tst_crm_db_ip         = "${local.private_subnet_prefix}.29"
+
+    # Portal IPs
+    prd_wp_webapp_ip      = "${local.private_subnet_prefix}.30"
+    prd_wp_db_ip          = "${local.private_subnet_prefix}.31"
+    tst_wp_webapp_ip      = "${local.private_subnet_prefix}.32"
+    tst_wp_db_ip          = "${local.private_subnet_prefix}.33"
+
+    # File servers
+    prd_fs_prefix         = "${local.private_subnet_prefix}.4"    # 41-49
+    tst_fs_prefix         = "${local.private_subnet_prefix}.5"    # 50-59
+
+    # Gatekeeper - WAN side
+    private_subnet_gw     = "${local.private_subnet_prefix}.1"   # Per AWS spec
+    prd_gk_wan_ip         = "${local.private_subnet_prefix}.60"
+    prd_gk_wan_ip_nmask   = regex("/[0-9]+", local.private_subnet_cidr)
+
+    # Gatekeeper - LAN side
+    prd_gk_lan_default_gw = "${local.gk_subnet_prefix}.1" # Per AWS spec
+    prd_gk_lan_ip         = "${local.gk_subnet_prefix}.4"
+    prd_gk_device_prefix  = "${local.gk_subnet_prefix}.1" # 11-19
+    prd_gk_lan_ip_nmask   = regex("/[0-9]+", local.gk_subnet_cidr)
+
+    # Webstore Istio Ingress
+    webstore_ip           = "172.20.255.210"
 }
 
 module "vpc" {
@@ -71,19 +86,16 @@ module "vpc" {
     dns_servers = [local.upstream_dns_server]
     domain_name = local.domain_name
     vpc_cidr_prefix = local.vpc_cidr_prefix
-    nat_gw_ip = local.nat_gw_ip
+    nat_gw_ip = local.aws_nat_gw_ip
 
-    dmz_public_subnet = local.dmz_public_subnet
-    prd_public_subnet = local.prd_public_subnet
-    prd_private_subnet = local.prd_private_subnet
-    tst_public_subnet = local.tst_public_subnet
-    tst_private_subnet = local.tst_private_subnet
+    public_subnet_1 = local.public_subnet_cidr
+    private_subnet_1 = local.private_subnet_cidr
 }
 
 resource "random_password" "password" {
   length = 16
   special = true
-  override_special = "!@#%&*-_=+<>:"
+  override_special = "+-_@#!"
 }
 
 resource "tls_private_key" "private_key" {
@@ -105,7 +117,14 @@ resource "local_file" "ssh_pem_file" {
 resource "aws_eip" "bastion_eip" {
   domain = "vpc"
   tags = {
-    Name = "${var.lab_name}-${var.loc_name}-DMZ-Public-IP"
+    Name = "${var.lab_name}-${var.loc_name}-Bastion-Public-IP"
+  }
+}
+
+resource "aws_eip" "web_gw_eip" {
+  domain = "vpc"
+  tags = {
+    Name = "${var.lab_name}-${var.loc_name}-Web-GW-Public-IP"
   }
 }
 
@@ -119,7 +138,7 @@ resource "aws_security_group" "internal_sg" {
     from_port = 0
     to_port = 0
     protocol = "-1"
-    cidr_blocks = ["${local.vpc_cidr_prefix}.0/24"]
+    cidr_blocks = ["${local.vpc_cidr_prefix}.0.0/16"]
   }
 
   # Allow all external access, including Internet
@@ -131,9 +150,9 @@ resource "aws_security_group" "internal_sg" {
   }
 }
 
-resource "aws_security_group" "public_ssh_sg" {
-  name = "${var.lab_name}-${var.loc_name}-ext-ssh-sg"
-  description = "Security group for External SSH access"
+resource "aws_security_group" "bastion_sg" {
+  name = "${var.lab_name}-${var.loc_name}-bastion-sg"
+  description = "Security group for the Bastion"
   vpc_id = module.vpc.vpc_id
 
   # Allow SSH 
@@ -145,31 +164,9 @@ resource "aws_security_group" "public_ssh_sg" {
   }
 }
 
-resource "aws_security_group" "dmz_web_sg" {
-  name = "${var.lab_name}-${var.loc_name}-dmz-web-sg"
-  description = "Security group for External HTTP access"
-  vpc_id = module.vpc.vpc_id
-
-  # Allow HTTP 
-  ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
-    cidr_blocks = ["${aws_eip.bastion_eip.public_ip}/32"]
-  }
-
-  # Allow HTTPS
-  ingress {
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
-    cidr_blocks = ["${aws_eip.bastion_eip.public_ip}/32"]
-  }
-}
-
-resource "aws_security_group" "public_web_sg" {
-  name = "${var.lab_name}-${var.loc_name}-public-web-sg"
-  description = "Security group for Public HTTP access"
+resource "aws_security_group" "web_gw_sg" {
+  name = "${var.lab_name}-${var.loc_name}-web-gw-sg"
+  description = "Security group for the DMZ Web gateway"
   vpc_id = module.vpc.vpc_id
 
   # Allow HTTP 
@@ -235,7 +232,7 @@ module "infra" {
   name_prefix = local.name_prefix 
   hostname_prefix = local.hostname_prefix
   dependency = module.vpc.nat_is_ready
-  public_subnet_id = module.vpc.dmz_public_subnet_id
+  public_subnet_id = module.vpc.public_subnet_1_id
   eip_id = aws_eip.bastion_eip.id
   key_name = local.key_name
 
@@ -244,18 +241,45 @@ module "infra" {
   asset_mgr_ip = local.asset_mgr_ip
   vuln_scanner_ip = local.vuln_scanner_ip
   
-  internal_sg_id = aws_security_group.internal_sg.id
-  public_ssh_sg_id = aws_security_group.public_ssh_sg.id
+  security_group_ids = [aws_security_group.bastion_sg.id, aws_security_group.internal_sg.id]
 
-  resource_subnets = [local.prd_public_subnet, 
-                      local.prd_private_subnet,
-                      local.tst_public_subnet,
-                      local.tst_private_subnet]
+  resource_subnets = [local.public_subnet_cidr, 
+                      local.private_subnet_cidr]
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+}
 
-  web_server_ip_list = [module.prd_crm.crm_public_ip, module.tst_crm.crm_public_ip,
-                        module.prd_hrm.hrm_public_ip, module.tst_hrm.hrm_public_ip,
-                        module.prd_portal.wordpress_public_ip, module.tst_portal.wordpress_public_ip]
+module "web_gw" {
+
+  source = "./modules/web-gw"
+
+  ami = data.aws_ami.ubuntu_22_04.id
+  owner_name = local.owner_name
+  name_prefix = local.name_prefix 
+  hostname_prefix = local.hostname_prefix
+  dependency = module.vpc.nat_is_ready
+  subnet_id = module.vpc.public_subnet_1_id
+  eip_id = aws_eip.web_gw_eip.id
+  eip = aws_eip.web_gw_eip.public_ip
+
+  prd_crm_ip = local.prd_crm_web_ip
+  prd_hrm_ip = local.prd_hrm_web_ip
+  prd_portal_ip = local.prd_wp_webapp_ip
+  webstore_ip = local.webstore_ip
+  kind_ip = local.kind_ip
+
+  key_name = local.key_name
+
+  web_gw_ip =  local.web_gw_ip
+  siem_ip = local.siem_ip
+  assetmgr_ip = local.asset_mgr_ip
+
+  xs_domain = var.xs_domain
+  xs_deployment_key = var.xs_deployment_key
+  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
+
+  security_group_ids = [aws_security_group.web_gw_sg.id, aws_security_group.internal_sg.id]
+
+  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
 module "prd_hrm" {
@@ -268,8 +292,7 @@ module "prd_hrm" {
   name_prefix = "${local.name_prefix}-prd-hrm"
   hostname_prefix = "${local.hostname_prefix}prdhrm"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.prd_private_subnet_id
-  public_subnet_id = module.vpc.prd_public_subnet_id
+  subnet_id = module.vpc.private_subnet_1_id
   key_name = local.key_name
 
   web_ip = local.prd_hrm_web_ip
@@ -282,7 +305,6 @@ module "prd_hrm" {
   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
-  dmz_web_sg_id = aws_security_group.dmz_web_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
@@ -296,8 +318,7 @@ module "tst_hrm" {
   name_prefix = "${local.name_prefix}-tst-hrm"
   hostname_prefix = "${local.hostname_prefix}tsthrm"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.tst_private_subnet_id
-  public_subnet_id = module.vpc.tst_public_subnet_id
+  subnet_id = module.vpc.private_subnet_1_id
   key_name = local.key_name
 
   web_ip = local.tst_hrm_web_ip
@@ -310,7 +331,6 @@ module "tst_hrm" {
   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
-  dmz_web_sg_id = aws_security_group.dmz_web_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
@@ -324,8 +344,7 @@ module "prd_crm" {
   name_prefix = "${local.name_prefix}-prd-crm"
   hostname_prefix = "${local.hostname_prefix}prdcrm"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.prd_private_subnet_id
-  public_subnet_id = module.vpc.prd_public_subnet_id
+  subnet_id = module.vpc.private_subnet_1_id
   key_name = local.key_name
 
   app_server_count = 3
@@ -340,7 +359,6 @@ module "prd_crm" {
   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
-  dmz_web_sg_id = aws_security_group.dmz_web_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
@@ -354,8 +372,7 @@ module "tst_crm" {
   name_prefix = "${local.name_prefix}-tst-crm"
   hostname_prefix = "${local.hostname_prefix}tstcrm"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.tst_private_subnet_id
-  public_subnet_id = module.vpc.tst_public_subnet_id
+  subnet_id = module.vpc.private_subnet_1_id
   key_name = local.key_name
 
   app_server_count = 1
@@ -370,7 +387,6 @@ module "tst_crm" {
   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
-  dmz_web_sg_id = aws_security_group.dmz_web_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
@@ -384,7 +400,7 @@ module "prd_fs" {
   name_prefix = "${local.name_prefix}-prd-fs"
   hostname_prefix = "${local.hostname_prefix}prdfs"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.prd_private_subnet_id
+  subnet_id = module.vpc.private_subnet_1_id
   key_name = local.key_name
 
   fs_server_count = 2
@@ -410,7 +426,7 @@ module "tst_fs" {
   name_prefix = "${local.name_prefix}-tst-fs"
   hostname_prefix = "${local.hostname_prefix}tstfs"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.tst_private_subnet_id
+  subnet_id = module.vpc.private_subnet_1_id
   key_name = local.key_name
 
   fs_server_count = 1
@@ -436,8 +452,7 @@ module "prd_portal" {
   name_prefix = "${local.name_prefix}-prd-prtl"
   hostname_prefix = "${local.hostname_prefix}prdprtl"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.prd_private_subnet_id
-  public_subnet_id = module.vpc.prd_public_subnet_id
+  subnet_id = module.vpc.private_subnet_1_id
   key_name = local.key_name
 
   webapp_ip = local.prd_wp_webapp_ip
@@ -449,7 +464,6 @@ module "prd_portal" {
   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
-  public_web_sg_id = aws_security_group.public_web_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
@@ -463,8 +477,7 @@ module "tst_portal" {
   name_prefix = "${local.name_prefix}-tst-prtl"
   hostname_prefix = "${local.hostname_prefix}tstprtl"
   dependency = module.vpc.nat_is_ready
-  private_subnet_id = module.vpc.tst_private_subnet_id
-  public_subnet_id = module.vpc.tst_public_subnet_id
+  subnet_id = module.vpc.private_subnet_1_id
   key_name = local.key_name
 
   webapp_ip = local.tst_wp_webapp_ip
@@ -476,7 +489,30 @@ module "tst_portal" {
   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
   internal_sg_id = aws_security_group.internal_sg.id
-  public_web_sg_id = aws_security_group.public_web_sg.id
+  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+}
+
+module "kind" {
+
+  source = "./modules/kind"
+
+  ami = data.aws_ami.ubuntu_22_04.id
+  owner_name = local.owner_name
+  name_prefix = "${local.name_prefix}-prd-kind"
+  hostname_prefix = "${local.hostname_prefix}prdkind"
+  dependency = module.vpc.nat_is_ready
+  subnet_id = module.vpc.public_subnet_1_id
+  key_name = local.key_name
+
+  xs_container_agent_version = var.xs_container_agent_version
+  xs_container_registry_uri = var.xs_container_registry_uri
+  xs_deployment_key = var.xs_deployment_key
+  xs_domain = var.xs_domain
+  web_gw_ip = local.web_gw_ip
+
+  kind_ip = local.kind_ip
+  security_group_ids = [aws_security_group.internal_sg.id, aws_security_group.bastion_sg.id]
+
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
@@ -498,14 +534,14 @@ module "gatekeeper" {
 
   gk_wan_ip = local.prd_gk_wan_ip
   gk_wan_ip_nmask = local.prd_gk_wan_ip_nmask
-  gk_wan_gw = local.prd_private_gw
+  gk_wan_gw = local.private_subnet_gw
 
   xs_gatekeeper_pkg_url = var.xs_gatekeeper_pkg_url
   xs_deployment_key = var.xs_deployment_key
   xs_domain = var.xs_domain
 
-  gk_lan_subnet = local.prd_gk_lan_subnet
-  gk_wan_subnet_id = module.vpc.prd_private_subnet_id
+  gk_lan_subnet = local.gk_subnet_cidr
+  gk_wan_subnet_id = module.vpc.private_subnet_1_id
 
   internal_sg_id = aws_security_group.internal_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name

@@ -3,29 +3,14 @@ output "vpc_id" {
     value = aws_vpc.vpc.id
 }
 
-output "dmz_public_subnet_id" {
-    description = "The DMZ public subnet id"
-    value = aws_subnet.dmz_public_subnet.id
+output "public_subnet_1_id" {
+    description = "The public subnet id"
+    value = aws_subnet.public_subnet_1.id
 }
 
-output "prd_public_subnet_id" {
-    description = "The PRD public subnet id"
-    value = aws_subnet.prd_public_subnet.id
-}
-
-output "tst_public_subnet_id" {
-    description = "The DEV public subnet id"
-    value = aws_subnet.tst_public_subnet.id
-}
-
-output "prd_private_subnet_id" {
-    description = "The PRD private subnet id"
-    value = aws_subnet.prd_private_subnet.id
-}
-
-output "tst_private_subnet_id" {
-    description = "The DEV private subnet id"
-    value = aws_subnet.tst_private_subnet.id
+output "private_subnet_1_id" {
+    description = "The first private subnet id"
+    value = aws_subnet.private_subnet_1.id
 }
 
 output "nat_is_ready" {

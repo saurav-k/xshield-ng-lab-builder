@@ -6,6 +6,7 @@
 import json
 import base64
 import requests
+from pathlib import Path
 
 from datetime import datetime
 from urllib.parse import urlparse
@@ -16,7 +17,8 @@ from Crypto.Signature import pss
 from Crypto.Hash import SHA256
 
 # Load configuration from file
-with open('config.json') as config_file:
+p = Path(__file__).with_name('config.json')
+with p.open('r') as config_file:
     config = json.load(config_file)
 
 keyConfig = config["keyConfig"]

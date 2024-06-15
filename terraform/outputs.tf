@@ -3,6 +3,11 @@ output "bastion_public_ip" {
     value = aws_eip.bastion_eip.public_ip
 }
 
+output "web_gw_public_ip" {
+    description = "Web GW Public IP"
+    value = aws_eip.web_gw_eip.public_ip
+}
+
 output "bastion_ip" {
     description = "Bastion IP"
     value = local.bastion_ip
@@ -26,16 +31,6 @@ output "siem_ip" {
 output "pem" {
     description = "SSH PEM Filename"
     value = "${path.cwd}/${local_file.ssh_pem_file.filename}"
-}
-
-output "portal_prd_url" {
-    description = "Portal Prod URL"
-    value = "https://${module.prd_portal.wordpress_public_ip}"
-}
-
-output "portal_tst_url" {
-    description = "Portal Test URL"
-    value = "https://${module.tst_portal.wordpress_public_ip}"
 }
 
 output "password" {

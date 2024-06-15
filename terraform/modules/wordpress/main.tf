@@ -2,7 +2,7 @@ resource "aws_instance" "db" {
   ami               = var.ami
   instance_type     = "t3.small"
   key_name          = var.key_name
-  subnet_id         = var.private_subnet_id
+  subnet_id         = var.subnet_id
   vpc_security_group_ids = [var.internal_sg_id]
   private_ip        = var.db_ip
   iam_instance_profile = var.ssm_instance_profile_name
@@ -35,8 +35,8 @@ resource "aws_instance" "webapp" {
   ami               = var.ami
   instance_type     = "t3.small"
   key_name          = var.key_name
-  subnet_id         = var.public_subnet_id
-  vpc_security_group_ids = [var.internal_sg_id, var.public_web_sg_id]
+  subnet_id         = var.subnet_id
+  vpc_security_group_ids = [var.internal_sg_id]
   private_ip        = var.webapp_ip
   iam_instance_profile = var.ssm_instance_profile_name
 

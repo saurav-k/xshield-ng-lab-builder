@@ -3,12 +3,6 @@ variable "key_name" {
     type = string
 }
 
-variable "password" {
-    description = "Password for database and default admin accounts"
-    type = string
-    sensitive = true
-}
-
 variable "owner_name" {
     description = "The owner of the VPC.  The 'Owner' tag will be set to this value"
     type = string
@@ -29,23 +23,8 @@ variable "subnet_id" {
     type = string
 }
 
-variable "db_ip" {
-    description = "Database IP address"
-    type = string
-}
-
-variable "app_ip_prefix" {
-    description = "App server IP address prefix"
-    type = string
-}
-
-variable "app_server_count" {
-    description = "The number of app servers"
-    type = number
-}
-
-variable "web_ip" {
-    description = "Web server IP address"
+variable "web_gw_ip" {
+    description = "Web GW IP address"
     type = string
 }
 
@@ -54,9 +33,9 @@ variable "dependency" {
     type = string
 }
 
-variable "internal_sg_id" {
-    description = "Internal security group Id"
-    type = string
+variable "security_group_ids" {
+    description = "List of security group Ids"
+    type = list(string)
 }
 
 variable "ssm_instance_profile_name" {
@@ -66,6 +45,41 @@ variable "ssm_instance_profile_name" {
 
 variable "ami" {
     description = "Base AMI"
+    type = string
+}
+
+variable "eip_id" {
+    description = "Elastic IP id for this server"
+    type = string
+}
+
+variable "eip" {
+    description = "Elastic IP for this server"
+    type = string
+}
+
+variable "prd_crm_ip" {
+    description = "Prod CRM IP"
+    type = string
+}
+
+variable "prd_hrm_ip" {
+    description = "Prod HRM IP"
+    type = string
+}
+
+variable "prd_portal_ip" {
+    description = "Prod Portal IP"
+    type = string
+}
+
+variable "webstore_ip" {
+    description = "Webstore IP"
+    type = string
+}
+
+variable "kind_ip" {
+    description = "Kind Host IP"
     type = string
 }
 

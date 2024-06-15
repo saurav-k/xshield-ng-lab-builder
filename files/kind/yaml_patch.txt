@@ -1,0 +1,25 @@
+# Delete lines
+- accessLogFile
+- uid
+- resourceVersion
+- creationTimestamp
+
+# Add lines
++ enablePrometheusMerge
+  enableEnvoyAccessLogService: true
+  accessLogEncoding: JSON
+
++ discoveryAddress
+  extraStatTags:
+  - request_method
+  - request_path
+
++ extensionProviders
+  - envoyHttpAls:
+      port: 9999
+      service: collector.ct-system.svc.cluster.local
+    name: ct-http-als
+  - envoyTcpAls:
+      port: 9999
+      service: collector.ct-system.svc.cluster.local
+    name: ct-tcp-als

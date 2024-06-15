@@ -18,14 +18,19 @@ variable "hostname_prefix" {
     type = string
 }
 
-variable "public_subnet_id" {
-    description = "Public subnet id for the Bastion"
+variable "subnet_id" {
+    description = "Subnet id for the servers"
     type = string
 }
 
-variable "resource_subnets" {
-  description = "The prod and dev subnets"
-  type = list(string)
+variable "kind_ip" {
+    description = "Host IP address"
+    type = string
+}
+
+variable "web_gw_ip" {
+    description = "Web Gateway IP address"
+    type = string
 }
 
 variable "dependency" {
@@ -48,27 +53,22 @@ variable "ami" {
     type = string
 }
 
-variable "eip_id" {
-    description = "Elastic IP id for the Bastion"
+variable "xs_container_agent_version" {
+    description = "Xshield Container Agent version"
     type = string
 }
 
-variable "bastion_ip" {
-    description = "Bastion IP"
+variable "xs_container_registry_uri" {
+    description = "Xshield Container Registry URI"
     type = string
 }
 
-variable "siem_ip" {
-    description = "SIEM IP"
+variable "xs_domain" {
+    description = "Xshield domain (URL)"
     type = string
 }
 
-variable "asset_mgr_ip" {
-    description = "Asset Manager IP"
-    type = string
-}
-
-variable "vuln_scanner_ip" {
-    description = "Vulnerability Scanner IP"
+variable "xs_deployment_key" {
+    description = "Xshield deployment key"
     type = string
 }

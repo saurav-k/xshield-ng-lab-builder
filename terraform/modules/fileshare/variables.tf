@@ -24,8 +24,8 @@ variable "hostname_prefix" {
     type = string
 }
 
-variable "private_subnet_id" {
-    description = "Private subnet id for the servers"
+variable "subnet_id" {
+    description = "Subnet id for the servers"
     type = string
 }
 

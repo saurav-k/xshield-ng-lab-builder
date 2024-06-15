@@ -2,7 +2,7 @@ resource "aws_network_interface" "eni1" {
   subnet_id        = var.public_subnet_id
   private_ip_list_enabled = true
   private_ip_list = [var.bastion_ip, var.siem_ip, var.asset_mgr_ip, var.vuln_scanner_ip]
-  security_groups = [var.internal_sg_id, var.public_ssh_sg_id]
+  security_groups = var.security_group_ids
   tags = {
     Name = "${var.name_prefix}-bastion-en1"
   }
@@ -31,7 +31,6 @@ resource "aws_instance" "bastion" {
             siem_ip = var.siem_ip,
             asset_mgr_ip = var.asset_mgr_ip,
             vuln_scanner_ip = var.vuln_scanner_ip
-            web_server_ip_list = join("\n", var.web_server_ip_list)
         }))
 }
 

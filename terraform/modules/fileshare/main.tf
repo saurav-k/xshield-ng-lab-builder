@@ -3,7 +3,7 @@ resource "aws_instance" "fileshare" {
   instance_type     = "t3.small"
   count             = var.fs_server_count
   key_name          = var.key_name
-  subnet_id         = var.private_subnet_id
+  subnet_id         = var.subnet_id
   vpc_security_group_ids = [var.internal_sg_id]
   private_ip        = "${var.fs_ip_prefix}${count.index+1}"
   iam_instance_profile = var.ssm_instance_profile_name

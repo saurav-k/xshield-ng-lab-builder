@@ -59,8 +59,9 @@ xs_deployment_key = "${deployment_key}"
 xs_gatekeeper_pkg_url = "${gk_pkg}" 
 xs_agent_debian_pkg_url = "${deb_pkg}"
 xs_agent_windows_pkg_url = "${win_pkg}"
+xs_container_agent_version = "5.9.0-beta.915"
+xs_container_registry_uri = "oci://colortokenspublic.azurecr.io/helm/ct-contsec"
 EOT
-
 
 profile=$(grep "^aws-profile" config.txt | cut -d "=" -f2)
 region=$(grep "^aws-region" config.txt | cut -d "=" -f2)

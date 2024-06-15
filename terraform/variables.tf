@@ -56,3 +56,13 @@ variable "xs_deployment_key" {
     description = "Xshield deployment key"
     type = string
 }
+
+variable "xs_container_agent_version" {
+    description = "Xshield Container Agent version"
+    type = string
+}
+
+variable "xs_container_registry_uri" {
+    description = "Xshield Container Registry URI"
+    type = string
+}

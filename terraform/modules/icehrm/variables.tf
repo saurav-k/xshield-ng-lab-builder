@@ -24,13 +24,8 @@ variable "hostname_prefix" {
     type = string
 }
 
-variable "private_subnet_id" {
-    description = "Private subnet id for App and DB servers"
-    type = string
-}
-
-variable "public_subnet_id" {
-    description = "Public subnet id for App and DB servers"
+variable "subnet_id" {
+    description = "Subnet id for the servers"
     type = string
 }
 
@@ -56,11 +51,6 @@ variable "dependency" {
 
 variable "internal_sg_id" {
     description = "Internal security group Id"
-    type = string
-}
-
-variable "dmz_web_sg_id" {
-    description = "External web security group Id"
     type = string
 }
 

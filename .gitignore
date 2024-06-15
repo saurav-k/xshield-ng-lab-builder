@@ -1,1 +1,3 @@
 config.txt
+*.pem
+.DS_Store

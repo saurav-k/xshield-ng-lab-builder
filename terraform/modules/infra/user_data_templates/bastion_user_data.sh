@@ -26,7 +26,3 @@ mv assetmgr.service /etc/systemd/system/assetmgr.service
 systemctl start assetmgr
 systemctl enable assetmgr
 
-# Generate traffic to web servers
-echo "${web_server_ip_list}" > /opt/acme/webservers
-sed -i "s|^|url=http://|" /opt/acme/webservers
-(crontab -l 2>/dev/null; echo "*/5 * * * * curl -L -K /opt/acme/webservers  > /var/log/webtraffic.out" ) | crontab -

@@ -1,7 +1,7 @@
 #/bin/bash
 set -x
 
-my_public_ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
+my_ip=$(hostname -I | cut -d " " -f1)
 cd /var/www/html
 {
     while :; do
@@ -16,7 +16,7 @@ cd /var/www/html
     done
 
     while :; do
-        if /tmp/wp core install --allow-root --url="https://${my_public_ip}" --title="Acme Corp" \
+        if /tmp/wp core install --allow-root --url="http://$my_ip" --title="Acme Corp" \
             --admin_name=admin --admin_password="{PASSWORD}" --admin_email=you@example.com;  then
             break
         fi
