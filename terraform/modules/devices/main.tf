@@ -20,5 +20,8 @@ resource "aws_instance" "agentless-devices" {
           hostname = "${var.hostname_prefix}device${count.index+1}",
           gk_lan_ip = "${var.gk_lan_ip}"
           gk_lan_default_gw = "${var.gk_lan_default_gw}"
+          ip_prefix = "${var.device_ip_prefix}"
+          count = "${var.device_count}"
         }))
 }
+
