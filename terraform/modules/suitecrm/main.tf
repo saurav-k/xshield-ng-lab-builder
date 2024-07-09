@@ -16,7 +16,9 @@ resource "aws_instance" "db" {
   user_data = base64encode(join("\n", [
       templatefile("${path.module}/user_data_templates/db_user_data.sh",
         {   hostname = "${var.hostname_prefix}db",
-            password = var.password
+            password = var.password,            
+            legacy_db_ip_prefix = var.legacy_db_ip_prefix,
+            legacy_db_count = var.legacy_db_count
         }),
       templatefile("${path.root}/common_user_data_templates/debian_agents.sh",
         {  

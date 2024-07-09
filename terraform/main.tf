@@ -71,6 +71,7 @@ locals {
     prd_gk_lan_default_gw = "${local.gk_subnet_prefix}.1" # Per AWS spec
     prd_gk_lan_ip         = "${local.gk_subnet_prefix}.4"
     prd_gk_device_prefix  = "${local.gk_subnet_prefix}.1" # 11-19
+    prd_gk_device_count   = 3
     prd_gk_lan_ip_nmask   = regex("/[0-9]+", local.gk_subnet_cidr)
 
     # Webstore Istio Ingress
@@ -357,6 +358,8 @@ module "prd_crm" {
   xs_domain = var.xs_domain
   xs_deployment_key = var.xs_deployment_key
   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
+  legacy_db_ip_prefix = local.prd_gk_device_prefix
+  legacy_db_count = local.prd_gk_device_count
 
   internal_sg_id = aws_security_group.internal_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
@@ -385,6 +388,8 @@ module "tst_crm" {
   xs_domain = var.xs_domain
   xs_deployment_key = var.xs_deployment_key
   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
+  legacy_db_ip_prefix = local.prd_gk_device_prefix
+  legacy_db_count = local.prd_gk_device_count
 
   internal_sg_id = aws_security_group.internal_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
@@ -560,7 +565,7 @@ module "agentless_devices" {
 
   gk_lan_subnet_id = module.gatekeeper.gk_lan_subnet_id
   device_ip_prefix = local.prd_gk_device_prefix
-  device_count = 3
+  device_count = local.prd_gk_device_count
   gk_lan_ip = local.prd_gk_lan_ip
   gk_lan_default_gw = local.prd_gk_lan_default_gw
 

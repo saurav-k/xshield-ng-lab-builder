@@ -93,3 +93,13 @@ variable "xs_deployment_key" {
     description = "Xshield deployment key"
     type = string
 }
+
+variable "legacy_db_ip_prefix" {
+    description = "IP prefix of legacy DB (to show traffic to legacy systems)"
+    type = string
+}
+
+variable "legacy_db_count" {
+    description = "Number of legacy DBs - use as a suffix to the legacy_db_ip_prefix"
+    type = string
+}
