@@ -1,6 +1,8 @@
 #!/bin/bash
 set -x
 hostnamectl set-hostname ${hostname}
+apt-get update
+apt-get install -y traceroute
 
 # Add a new default route via the Gatekeeper
 ip route add default via ${gk_lan_ip} metric 10
