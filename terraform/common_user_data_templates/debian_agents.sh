@@ -1,7 +1,13 @@
 apt install -y netcat
-wget https://ct-xshield-lab-assets.s3.amazonaws.com/infra/agent.sh
-sed -i "s/{SIEM_IP}/${siem_ip}/;s/{ASSETMGR_IP}/${assetmgr_ip}/" agent.sh
-install -D agent.sh /opt/acme/agent.sh
+
+# Create a script to simulate the SIEM and ASSETMGR agents
+cat > /tmp/agent.sh <<EOT
+#!/bin/bash
+nc -vz ${siem_ip} 9997 2> /var/log/siem.log
+nc -vz ${assetmgr_ip} 17472 2> /var/log/assetmgr.log
+EOT
+
+install -D /tmp/agent.sh /opt/acme/agent.sh
 (crontab -l 2>/dev/null; echo "*/5 * * * *  /opt/acme/agent.sh" ) | crontab -
 
 apt install -y curl libpcap-dev nftables iptables rpcbind rsyslog

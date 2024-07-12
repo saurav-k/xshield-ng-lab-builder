@@ -28,12 +28,12 @@ variable "nat_gw_ip" {
     type = string
 }
 
-variable "public_subnet_1" {
+variable "public_subnet" {
     description = "The CIDR block for the public subnet"
     type = string
 }
 
-variable "private_subnet_1" {
-    description = "The CIDR block for the first private subnet"
+variable "private_subnet" {
+    description = "The CIDR block for the private subnet"
     type = string 
 }

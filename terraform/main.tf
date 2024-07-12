@@ -1,7 +1,8 @@
 locals {
 
     name_prefix = "${var.owner}-${var.lab_name}-${var.loc_name}"
-    hostname_prefix = "${var.lab_name}${var.loc_name}"
+    #hostname_prefix = "${var.lab_name}${var.loc_name}"
+    hostname_prefix = "${var.loc_name}"
     domain_name = "acmesysinc.com"
 
     key_name   = "xshield-lab-builder-${var.owner}"
@@ -89,8 +90,8 @@ module "vpc" {
     vpc_cidr_prefix = local.vpc_cidr_prefix
     nat_gw_ip = local.aws_nat_gw_ip
 
-    public_subnet_1 = local.public_subnet_cidr
-    private_subnet_1 = local.private_subnet_cidr
+    public_subnet = local.public_subnet_cidr
+    private_subnet = local.private_subnet_cidr
 }
 
 resource "random_password" "password" {
@@ -233,7 +234,7 @@ module "infra" {
   name_prefix = local.name_prefix 
   hostname_prefix = local.hostname_prefix
   dependency = module.vpc.nat_is_ready
-  public_subnet_id = module.vpc.public_subnet_1_id
+  public_subnet_id = module.vpc.public_subnet_id
   eip_id = aws_eip.bastion_eip.id
   key_name = local.key_name
 
@@ -258,7 +259,7 @@ module "web_gw" {
   name_prefix = local.name_prefix 
   hostname_prefix = local.hostname_prefix
   dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.public_subnet_1_id
+  subnet_id = module.vpc.public_subnet_id
   eip_id = aws_eip.web_gw_eip.id
   eip = aws_eip.web_gw_eip.public_ip
 
@@ -293,7 +294,7 @@ module "prd_hrm" {
   name_prefix = "${local.name_prefix}-prd-hrm"
   hostname_prefix = "${local.hostname_prefix}prdhrm"
   dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_1_id
+  subnet_id = module.vpc.private_subnet_id
   key_name = local.key_name
 
   web_ip = local.prd_hrm_web_ip
@@ -319,7 +320,7 @@ module "tst_hrm" {
   name_prefix = "${local.name_prefix}-tst-hrm"
   hostname_prefix = "${local.hostname_prefix}tsthrm"
   dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_1_id
+  subnet_id = module.vpc.private_subnet_id
   key_name = local.key_name
 
   web_ip = local.tst_hrm_web_ip
@@ -345,7 +346,7 @@ module "prd_crm" {
   name_prefix = "${local.name_prefix}-prd-crm"
   hostname_prefix = "${local.hostname_prefix}prdcrm"
   dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_1_id
+  subnet_id = module.vpc.private_subnet_id
   key_name = local.key_name
 
   app_server_count = 3
@@ -375,7 +376,7 @@ module "tst_crm" {
   name_prefix = "${local.name_prefix}-tst-crm"
   hostname_prefix = "${local.hostname_prefix}tstcrm"
   dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_1_id
+  subnet_id = module.vpc.private_subnet_id
   key_name = local.key_name
 
   app_server_count = 1
@@ -405,7 +406,7 @@ module "prd_fs" {
   name_prefix = "${local.name_prefix}-prd-fs"
   hostname_prefix = "${local.hostname_prefix}prdfs"
   dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_1_id
+  subnet_id = module.vpc.private_subnet_id
   key_name = local.key_name
 
   fs_server_count = 2
@@ -431,7 +432,7 @@ module "tst_fs" {
   name_prefix = "${local.name_prefix}-tst-fs"
   hostname_prefix = "${local.hostname_prefix}tstfs"
   dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_1_id
+  subnet_id = module.vpc.private_subnet_id
   key_name = local.key_name
 
   fs_server_count = 1
@@ -457,7 +458,7 @@ module "prd_portal" {
   name_prefix = "${local.name_prefix}-prd-prtl"
   hostname_prefix = "${local.hostname_prefix}prdprtl"
   dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_1_id
+  subnet_id = module.vpc.private_subnet_id
   key_name = local.key_name
 
   webapp_ip = local.prd_wp_webapp_ip
@@ -482,7 +483,7 @@ module "tst_portal" {
   name_prefix = "${local.name_prefix}-tst-prtl"
   hostname_prefix = "${local.hostname_prefix}tstprtl"
   dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_1_id
+  subnet_id = module.vpc.private_subnet_id
   key_name = local.key_name
 
   webapp_ip = local.tst_wp_webapp_ip
@@ -506,7 +507,7 @@ module "kind" {
   name_prefix = "${local.name_prefix}-prd-kind"
   hostname_prefix = "${local.hostname_prefix}prdkind"
   dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.public_subnet_1_id
+  subnet_id = module.vpc.public_subnet_id
   key_name = local.key_name
 
   xs_container_agent_version = var.xs_container_agent_version
@@ -546,7 +547,7 @@ module "gatekeeper" {
   xs_domain = var.xs_domain
 
   gk_lan_subnet = local.gk_subnet_cidr
-  gk_wan_subnet_id = module.vpc.private_subnet_1_id
+  gk_wan_subnet_id = module.vpc.private_subnet_id
 
   internal_sg_id = aws_security_group.internal_sg.id
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
@@ -573,3 +574,8 @@ module "agentless_devices" {
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
+resource "aws_route" "gk_devices_route" {
+  route_table_id         = module.vpc.private_subnet_rt_id
+  destination_cidr_block = local.gk_subnet_cidr
+  network_interface_id   = module.gatekeeper.gk_wan_interface_id
+}

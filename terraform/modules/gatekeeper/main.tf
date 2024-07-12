@@ -46,7 +46,10 @@ resource "aws_network_interface" "gk_wan_interface" {
   }
 }
 
-# Route table towards Gatekeeper
+# Gatekeeper LAN route table
+# Send all traffic to the Gatekeeper's LAN interface
+# Note that AWS will still send local traffic (like 10.0.0.0/16) to the AWS router,
+# so we will need to add explicit routes on each agent-less device.
 resource "aws_route_table" "rt_gk_lan" {
   vpc_id = var.vpc_id
 

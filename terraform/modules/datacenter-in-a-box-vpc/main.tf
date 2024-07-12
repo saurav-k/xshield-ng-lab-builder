@@ -38,28 +38,28 @@ resource "aws_vpc_dhcp_options_association" "dhcp_opts_assoc" {
 
 # Public subnets
 
-resource "aws_subnet" "public_subnet_1" {
+resource "aws_subnet" "public_subnet" {
   vpc_id            = aws_vpc.vpc.id
-  cidr_block        = var.public_subnet_1
+  cidr_block        = var.public_subnet
   availability_zone = data.aws_availability_zones.available.names.0
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "${var.name_prefix}-public-subne-1"
+    Name = "${var.name_prefix}-public-subnet"
   }
 }
 
 # End of Public subnets
 
 # Private subnets
-resource "aws_subnet" "private_subnet_1" {
+resource "aws_subnet" "private_subnet" {
 
   vpc_id            = aws_vpc.vpc.id
-  cidr_block        = var.private_subnet_1
+  cidr_block        = var.private_subnet
   availability_zone = data.aws_availability_zones.available.names.0
 
   tags = {
-    Name = "${var.name_prefix}-private-subnet-1"
+    Name = "${var.name_prefix}-private-subnet"
   }
 }
 
@@ -73,8 +73,8 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-# Route table towards Internet Gateway
-resource "aws_route_table" "rt_igw" {
+# Route table for Public subnet
+resource "aws_route_table" "rt_public" {
 
   vpc_id = aws_vpc.vpc.id
 
@@ -84,15 +84,15 @@ resource "aws_route_table" "rt_igw" {
   }
 
   tags = {
-    Name = "${var.name_prefix}-igw-rt"
+    Name = "${var.name_prefix}-rt-pub"
   }
 }
 
 # Public subnet --> IGW association
-resource "aws_route_table_association" "assoc_rt_igw_public" {
+resource "aws_route_table_association" "assoc_rt_public_igw" {
 
-  subnet_id      = aws_subnet.public_subnet_1.id
-  route_table_id = aws_route_table.rt_igw.id
+  subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.rt_public.id
 }
 
 # Elastic IP for NATGW
@@ -106,7 +106,7 @@ resource "aws_eip" "natgw_eip" {
 # NAT gateway
 resource "aws_nat_gateway" "natgw" {
   allocation_id = aws_eip.natgw_eip.id
-  subnet_id     = aws_subnet.public_subnet_1.id
+  subnet_id     = aws_subnet.public_subnet.id
   private_ip    = var.nat_gw_ip
 
   tags = {
@@ -119,8 +119,8 @@ resource "null_resource" "nat_ready" {
   depends_on = [aws_nat_gateway.natgw]
 }
 
-# Route table towards NAT gateway
-resource "aws_route_table" "rt_nat_gw" {
+# Route table for the private subnet
+resource "aws_route_table" "rt_private" {
   vpc_id = aws_vpc.vpc.id
 
   route {
@@ -129,13 +129,13 @@ resource "aws_route_table" "rt_nat_gw" {
   }
 
   tags = {
-    Name = "${var.name_prefix}-natgw-rt"
+    Name = "${var.name_prefix}-rt-pvt"
   }
 }
 
 # Private subnets --> NATGW association
-resource "aws_route_table_association" "assoc_rt_natgw_private_1" {
+resource "aws_route_table_association" "assoc_rt_private_ngw" {
 
-  subnet_id       = aws_subnet.private_subnet_1.id
-  route_table_id  = aws_route_table.rt_nat_gw.id
+  subnet_id       = aws_subnet.private_subnet.id
+  route_table_id  = aws_route_table.rt_private.id
 }

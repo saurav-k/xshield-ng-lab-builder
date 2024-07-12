@@ -2,9 +2,13 @@
 
 if ( -Not (Test-Path C:\AgentsInstalled)) {
 
-    # Download the agent script and update the parameters
-    Invoke-WebRequest -Uri https://ct-xshield-lab-assets.s3.amazonaws.com/infra/agent.ps1 -OutFile C:\Windows\Temp\agent.ps1
-    (Get-Content C:\Windows\Temp\agent.ps1).Replace("{SIEM_IP}", "${siem_ip}").Replace("{ASSETMGR_IP}", "${assetmgr_ip}") | Set-Content C:\Windows\Temp\agent.ps1
+    # Create the agent script and update the parameters
+    $fileContent = @"
+Test-NetConnection -ComputerName ${siem_ip} -Port 9997
+Test-NetConnection -ComputerName ${assetmgr_ip} -Port 17472
+"@
+    $filePath = "C:\Windows\Temp\agent.ps1"
+    $fileContent | Out-File -FilePath $filePath
 
     # Schedule a task to run the agent script every 5 minutes
     $action = New-ScheduledTaskAction -Execute "Powershell.exe" -Argument "-File C:\Windows\Temp\agent.ps1"
