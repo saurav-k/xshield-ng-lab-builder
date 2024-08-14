@@ -70,7 +70,7 @@ aws ec2 describe-instances
 
 <details>
 <summary>Install Terraform</summary>
-<p>
+
 ```
 sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
 wget -O- https://apt.releases.hashicorp.com/gpg | \
