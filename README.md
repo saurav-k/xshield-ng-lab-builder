@@ -2,7 +2,7 @@
 
 ![alt](images/lab-env.png)
 
-This lab consists of EC2 instances deployed using Terraform in any AWS region of your choosing.  It represents two environments with a mix of Ubuntu Linux and Microsoft Windows servers, and also includes three "legacy" systems served by a ColorTokens Gatekeeper appliance.  Built-in traffic generators send HTTP requests to the CRM, HRMS and Wordpress front-ends.  Infrastructure services include a SIEM, a vulnerability scanner, and an Inventory Management system.
+This lab consists of EC2 instances deployed using Terraform in any AWS region of your choosing.  It represents three environments with a mix of Ubuntu Linux and Microsoft Windows Virtual Machines, a Kubernetes cluster running a small Istio-enabled application, and also includes three un-agentable systems served by a ColorTokens Gatekeeper appliance.  Built-in traffic generators send HTTP requests to the CRM, HRMS and Wordpress front-ends.  Infrastructure services include a SIEM, a vulnerability scanner, and an Inventory Management system.
 
 Xshield agents are deployed during Terraform-ation, and optional Ansible scripts are also included. The Ansible scripts are useful if you decommision the agents from the Xshield console, and would like to re-install them withot destroying and rebuilding the environment.
 
