@@ -1,6 +1,8 @@
 locals {
 
+    aws_region = "us=east-1"
     name_prefix = "${var.owner}-${var.lab_name}-${var.loc_name}"
+    bucket_name_prefix = "${var.bucket_owner}-${var.lab_name}-${var.loc_name}"
     #hostname_prefix = "${var.lab_name}${var.loc_name}"
     hostname_prefix = "${var.loc_name}"
     domain_name = "acmesysinc.com"
@@ -93,6 +95,29 @@ module "vpc" {
     public_subnet = local.public_subnet_cidr
     private_subnet = local.private_subnet_cidr
 }
+
+module "vpc-logs-to-s3" {
+    source = "./modules/vpc-logs-to-s3"
+    name_prefix       = local.name_prefix
+    owner_name        = local.owner_name
+    aws_region        = local.aws_region
+    bucket_name_prefix = local.bucket_name_prefix
+}
+
+# module "vpc" {
+#     source = "./modules/vpc-logs-to-s3"
+    
+#     name_prefix = local.name_prefix
+#     owner_name = local.owner_name
+
+#     dns_servers = [local.upstream_dns_server]
+#     domain_name = local.domain_name
+#     vpc_cidr_prefix = local.vpc_cidr_prefix
+#     nat_gw_ip = local.aws_nat_gw_ip
+
+#     public_subnet = local.public_subnet_cidr
+#     private_subnet = local.private_subnet_cidr
+# }
 
 resource "random_password" "password" {
   length = 16
@@ -224,10 +249,19 @@ module "infra" {
 
   source = "./modules/infra"
 
-  depends_on = [
-      module.prd_crm.crm_public_ip, module.prd_hrm.hrm_public_ip, module.prd_portal.portal_public_ip,
-      module.tst_crm.crm_public_ip, module.tst_hrm.hrm_public_ip, module.tst_portal.portal_public_ip
+  # depends_on = [
+  #     module.prd_crm.crm_public_ip, module.prd_hrm.hrm_public_ip, module.prd_portal.portal_public_ip,
+  #     module.tst_crm.crm_public_ip, module.tst_hrm.hrm_public_ip, module.tst_portal.portal_public_ip
+  #   ]
+
+    depends_on = [
+      module.prd_crm.crm_public_ip,
     ]
+
+    # depends_on = [
+    #   module.prd_crm.crm_public_ip,
+    #   module.tst_crm.crm_public_ip
+    # ]
 
   ami = data.aws_ami.ubuntu_22_04.id
   owner_name = local.owner_name
@@ -284,57 +318,57 @@ module "web_gw" {
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
-module "prd_hrm" {
+# module "prd_hrm" {
 
-  source = "./modules/icehrm"
+#   source = "./modules/icehrm"
 
-  ami = data.aws_ami.ubuntu_22_04.id
-  owner_name = local.owner_name
-  password = random_password.password.result
-  name_prefix = "${local.name_prefix}-prd-hrm"
-  hostname_prefix = "${local.hostname_prefix}prdhrm"
-  dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_id
-  key_name = local.key_name
+#   ami = data.aws_ami.ubuntu_22_04.id
+#   owner_name = local.owner_name
+#   password = random_password.password.result
+#   name_prefix = "${local.name_prefix}-prd-hrm"
+#   hostname_prefix = "${local.hostname_prefix}prdhrm"
+#   dependency = module.vpc.nat_is_ready
+#   subnet_id = module.vpc.private_subnet_id
+#   key_name = local.key_name
 
-  web_ip = local.prd_hrm_web_ip
-  app_ip = local.prd_hrm_app_ip
-  db_ip = local.prd_hrm_db_ip
-  siem_ip = local.siem_ip
-  assetmgr_ip = local.asset_mgr_ip
-  xs_domain = var.xs_domain
-  xs_deployment_key = var.xs_deployment_key
-  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
+#   web_ip = local.prd_hrm_web_ip
+#   app_ip = local.prd_hrm_app_ip
+#   db_ip = local.prd_hrm_db_ip
+#   siem_ip = local.siem_ip
+#   assetmgr_ip = local.asset_mgr_ip
+#   xs_domain = var.xs_domain
+#   xs_deployment_key = var.xs_deployment_key
+#   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
-  internal_sg_id = aws_security_group.internal_sg.id
-  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-}
+#   internal_sg_id = aws_security_group.internal_sg.id
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
 
-module "tst_hrm" {
+# module "tst_hrm" {
 
-  source = "./modules/icehrm"
+#   source = "./modules/icehrm"
 
-  ami = data.aws_ami.ubuntu_22_04.id
-  owner_name = local.owner_name
-  password = random_password.password.result
-  name_prefix = "${local.name_prefix}-tst-hrm"
-  hostname_prefix = "${local.hostname_prefix}tsthrm"
-  dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_id
-  key_name = local.key_name
+#   ami = data.aws_ami.ubuntu_22_04.id
+#   owner_name = local.owner_name
+#   password = random_password.password.result
+#   name_prefix = "${local.name_prefix}-tst-hrm"
+#   hostname_prefix = "${local.hostname_prefix}tsthrm"
+#   dependency = module.vpc.nat_is_ready
+#   subnet_id = module.vpc.private_subnet_id
+#   key_name = local.key_name
 
-  web_ip = local.tst_hrm_web_ip
-  app_ip = local.tst_hrm_app_ip
-  db_ip = local.tst_hrm_db_ip
-  siem_ip = local.siem_ip
-  assetmgr_ip = local.asset_mgr_ip
-  xs_domain = var.xs_domain
-  xs_deployment_key = var.xs_deployment_key
-  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
+#   web_ip = local.tst_hrm_web_ip
+#   app_ip = local.tst_hrm_app_ip
+#   db_ip = local.tst_hrm_db_ip
+#   siem_ip = local.siem_ip
+#   assetmgr_ip = local.asset_mgr_ip
+#   xs_domain = var.xs_domain
+#   xs_deployment_key = var.xs_deployment_key
+#   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
-  internal_sg_id = aws_security_group.internal_sg.id
-  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-}
+#   internal_sg_id = aws_security_group.internal_sg.id
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
 
 module "prd_crm" {
 
@@ -349,7 +383,7 @@ module "prd_crm" {
   subnet_id = module.vpc.private_subnet_id
   key_name = local.key_name
 
-  app_server_count = 3
+  app_server_count = 1 # changed to 1 from 3 
 
   web_ip = local.prd_crm_web_ip
   app_ip_prefix = local.prd_crm_app_prefix
@@ -366,216 +400,216 @@ module "prd_crm" {
   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 }
 
-module "tst_crm" {
+# module "tst_crm" {
 
-  source = "./modules/suitecrm"
+#   source = "./modules/suitecrm"
 
-  ami = data.aws_ami.ubuntu_22_04.id
-  owner_name = local.owner_name
-  password = random_password.password.result
-  name_prefix = "${local.name_prefix}-tst-crm"
-  hostname_prefix = "${local.hostname_prefix}tstcrm"
-  dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_id
-  key_name = local.key_name
+#   ami = data.aws_ami.ubuntu_22_04.id
+#   owner_name = local.owner_name
+#   password = random_password.password.result
+#   name_prefix = "${local.name_prefix}-tst-crm"
+#   hostname_prefix = "${local.hostname_prefix}tstcrm"
+#   dependency = module.vpc.nat_is_ready
+#   subnet_id = module.vpc.private_subnet_id
+#   key_name = local.key_name
 
-  app_server_count = 1
+#   app_server_count = 1
 
-  web_ip = local.tst_crm_web_ip
-  app_ip_prefix = local.tst_crm_app_prefix
-  db_ip = local.tst_crm_db_ip
-  siem_ip = local.siem_ip
-  assetmgr_ip = local.asset_mgr_ip
-  xs_domain = var.xs_domain
-  xs_deployment_key = var.xs_deployment_key
-  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
-  legacy_db_ip_prefix = local.prd_gk_device_prefix
-  legacy_db_count = local.prd_gk_device_count
+#   web_ip = local.tst_crm_web_ip
+#   app_ip_prefix = local.tst_crm_app_prefix
+#   db_ip = local.tst_crm_db_ip
+#   siem_ip = local.siem_ip
+#   assetmgr_ip = local.asset_mgr_ip
+#   xs_domain = var.xs_domain
+#   xs_deployment_key = var.xs_deployment_key
+#   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
+#   legacy_db_ip_prefix = local.prd_gk_device_prefix
+#   legacy_db_count = local.prd_gk_device_count
 
-  internal_sg_id = aws_security_group.internal_sg.id
-  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-}
+#   internal_sg_id = aws_security_group.internal_sg.id
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
 
-module "prd_fs" {
+# module "prd_fs" {
 
-  source = "./modules/fileshare"
+#   source = "./modules/fileshare"
 
-  ami = data.aws_ami.win2019.id
-  owner_name = local.owner_name
-  password = random_password.password.result
-  name_prefix = "${local.name_prefix}-prd-fs"
-  hostname_prefix = "${local.hostname_prefix}prdfs"
-  dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_id
-  key_name = local.key_name
+#   ami = data.aws_ami.win2019.id
+#   owner_name = local.owner_name
+#   password = random_password.password.result
+#   name_prefix = "${local.name_prefix}-prd-fs"
+#   hostname_prefix = "${local.hostname_prefix}prdfs"
+#   dependency = module.vpc.nat_is_ready
+#   subnet_id = module.vpc.private_subnet_id
+#   key_name = local.key_name
 
-  fs_server_count = 2
+#   fs_server_count = 2
 
-  fs_ip_prefix = local.prd_fs_prefix
-  siem_ip = local.siem_ip
-  assetmgr_ip = local.asset_mgr_ip
-  xs_domain = var.xs_domain
-  xs_deployment_key = var.xs_deployment_key
-  xs_agent_windows_pkg_url = var.xs_agent_windows_pkg_url
+#   fs_ip_prefix = local.prd_fs_prefix
+#   siem_ip = local.siem_ip
+#   assetmgr_ip = local.asset_mgr_ip
+#   xs_domain = var.xs_domain
+#   xs_deployment_key = var.xs_deployment_key
+#   xs_agent_windows_pkg_url = var.xs_agent_windows_pkg_url
 
-  internal_sg_id = aws_security_group.internal_sg.id
-  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-}
+#   internal_sg_id = aws_security_group.internal_sg.id
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
 
-module "tst_fs" {
+# module "tst_fs" {
 
-  source = "./modules/fileshare"
+#   source = "./modules/fileshare"
 
-  ami = data.aws_ami.win2019.id
-  owner_name = local.owner_name
-  password = random_password.password.result
-  name_prefix = "${local.name_prefix}-tst-fs"
-  hostname_prefix = "${local.hostname_prefix}tstfs"
-  dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_id
-  key_name = local.key_name
+#   ami = data.aws_ami.win2019.id
+#   owner_name = local.owner_name
+#   password = random_password.password.result
+#   name_prefix = "${local.name_prefix}-tst-fs"
+#   hostname_prefix = "${local.hostname_prefix}tstfs"
+#   dependency = module.vpc.nat_is_ready
+#   subnet_id = module.vpc.private_subnet_id
+#   key_name = local.key_name
 
-  fs_server_count = 1
+#   fs_server_count = 1
 
-  fs_ip_prefix = local.tst_fs_prefix
-  siem_ip = local.siem_ip
-  assetmgr_ip = local.asset_mgr_ip
-  xs_domain = var.xs_domain
-  xs_deployment_key = var.xs_deployment_key
-  xs_agent_windows_pkg_url = var.xs_agent_windows_pkg_url
+#   fs_ip_prefix = local.tst_fs_prefix
+#   siem_ip = local.siem_ip
+#   assetmgr_ip = local.asset_mgr_ip
+#   xs_domain = var.xs_domain
+#   xs_deployment_key = var.xs_deployment_key
+#   xs_agent_windows_pkg_url = var.xs_agent_windows_pkg_url
 
-  internal_sg_id = aws_security_group.internal_sg.id
-  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-}
+#   internal_sg_id = aws_security_group.internal_sg.id
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
 
-module "prd_portal" {
+# module "prd_portal" {
 
-  source = "./modules/wordpress"
+#   source = "./modules/wordpress"
 
-  ami = data.aws_ami.ubuntu_22_04.id
-  owner_name = local.owner_name
-  password = random_password.password.result
-  name_prefix = "${local.name_prefix}-prd-prtl"
-  hostname_prefix = "${local.hostname_prefix}prdprtl"
-  dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_id
-  key_name = local.key_name
+#   ami = data.aws_ami.ubuntu_22_04.id
+#   owner_name = local.owner_name
+#   password = random_password.password.result
+#   name_prefix = "${local.name_prefix}-prd-prtl"
+#   hostname_prefix = "${local.hostname_prefix}prdprtl"
+#   dependency = module.vpc.nat_is_ready
+#   subnet_id = module.vpc.private_subnet_id
+#   key_name = local.key_name
 
-  webapp_ip = local.prd_wp_webapp_ip
-  db_ip = local.prd_wp_db_ip
-  siem_ip = local.siem_ip
-  assetmgr_ip = local.asset_mgr_ip
-  xs_domain = var.xs_domain
-  xs_deployment_key = var.xs_deployment_key
-  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
+#   webapp_ip = local.prd_wp_webapp_ip
+#   db_ip = local.prd_wp_db_ip
+#   siem_ip = local.siem_ip
+#   assetmgr_ip = local.asset_mgr_ip
+#   xs_domain = var.xs_domain
+#   xs_deployment_key = var.xs_deployment_key
+#   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
-  internal_sg_id = aws_security_group.internal_sg.id
-  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-}
+#   internal_sg_id = aws_security_group.internal_sg.id
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
 
-module "tst_portal" {
+# module "tst_portal" {
 
-  source = "./modules/wordpress"
+#   source = "./modules/wordpress"
 
-  ami = data.aws_ami.ubuntu_22_04.id
-  owner_name = local.owner_name
-  password = random_password.password.result
-  name_prefix = "${local.name_prefix}-tst-prtl"
-  hostname_prefix = "${local.hostname_prefix}tstprtl"
-  dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_id
-  key_name = local.key_name
+#   ami = data.aws_ami.ubuntu_22_04.id
+#   owner_name = local.owner_name
+#   password = random_password.password.result
+#   name_prefix = "${local.name_prefix}-tst-prtl"
+#   hostname_prefix = "${local.hostname_prefix}tstprtl"
+#   dependency = module.vpc.nat_is_ready
+#   subnet_id = module.vpc.private_subnet_id
+#   key_name = local.key_name
 
-  webapp_ip = local.tst_wp_webapp_ip
-  db_ip = local.tst_wp_db_ip
-  siem_ip = local.siem_ip
-  assetmgr_ip = local.asset_mgr_ip
-  xs_domain = var.xs_domain
-  xs_deployment_key = var.xs_deployment_key
-  xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
+#   webapp_ip = local.tst_wp_webapp_ip
+#   db_ip = local.tst_wp_db_ip
+#   siem_ip = local.siem_ip
+#   assetmgr_ip = local.asset_mgr_ip
+#   xs_domain = var.xs_domain
+#   xs_deployment_key = var.xs_deployment_key
+#   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
 
-  internal_sg_id = aws_security_group.internal_sg.id
-  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-}
+#   internal_sg_id = aws_security_group.internal_sg.id
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
 
-module "kind" {
+# module "kind" {
 
-  source = "./modules/kind"
+#   source = "./modules/kind"
 
-  ami = data.aws_ami.ubuntu_22_04.id
-  owner_name = local.owner_name
-  name_prefix = "${local.name_prefix}-prd-kind"
-  hostname_prefix = "${local.hostname_prefix}prdkind"
-  dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.public_subnet_id
-  key_name = local.key_name
+#   ami = data.aws_ami.ubuntu_22_04.id
+#   owner_name = local.owner_name
+#   name_prefix = "${local.name_prefix}-prd-kind"
+#   hostname_prefix = "${local.hostname_prefix}prdkind"
+#   dependency = module.vpc.nat_is_ready
+#   subnet_id = module.vpc.public_subnet_id
+#   key_name = local.key_name
 
-  xs_container_agent_version = var.xs_container_agent_version
-  xs_container_registry_uri = var.xs_container_registry_uri
-  xs_deployment_key = var.xs_deployment_key
-  xs_domain = var.xs_domain
-  web_gw_ip = local.web_gw_ip
+#   xs_container_agent_version = var.xs_container_agent_version
+#   xs_container_registry_uri = var.xs_container_registry_uri
+#   xs_deployment_key = var.xs_deployment_key
+#   xs_domain = var.xs_domain
+#   web_gw_ip = local.web_gw_ip
 
-  kind_ip = local.kind_ip
-  security_group_ids = [aws_security_group.internal_sg.id, aws_security_group.bastion_sg.id]
+#   kind_ip = local.kind_ip
+#   security_group_ids = [aws_security_group.internal_sg.id, aws_security_group.bastion_sg.id]
 
-  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-}
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
 
-module "gatekeeper" {
+# module "gatekeeper" {
 
-  source = "./modules/gatekeeper"
+#   source = "./modules/gatekeeper"
 
-  ami = data.aws_ami.ubuntu_22_04.id
-  owner_name = local.owner_name
-  name_prefix = "${local.name_prefix}-gk"
-  hostname_prefix = "${local.hostname_prefix}gx"
-  dependency = module.vpc.nat_is_ready
-  vpc_id = module.vpc.vpc_id
-  key_name = local.key_name
+#   ami = data.aws_ami.ubuntu_22_04.id
+#   owner_name = local.owner_name
+#   name_prefix = "${local.name_prefix}-gk"
+#   hostname_prefix = "${local.hostname_prefix}gx"
+#   dependency = module.vpc.nat_is_ready
+#   vpc_id = module.vpc.vpc_id
+#   key_name = local.key_name
 
-  gk_lan_ip = local.prd_gk_lan_ip
-  gk_lan_ip_nmask = local.prd_gk_lan_ip_nmask
-  gk_lan_gw = local.prd_gk_lan_ip
+#   gk_lan_ip = local.prd_gk_lan_ip
+#   gk_lan_ip_nmask = local.prd_gk_lan_ip_nmask
+#   gk_lan_gw = local.prd_gk_lan_ip
 
-  gk_wan_ip = local.prd_gk_wan_ip
-  gk_wan_ip_nmask = local.prd_gk_wan_ip_nmask
-  gk_wan_gw = local.private_subnet_gw
+#   gk_wan_ip = local.prd_gk_wan_ip
+#   gk_wan_ip_nmask = local.prd_gk_wan_ip_nmask
+#   gk_wan_gw = local.private_subnet_gw
 
-  xs_gatekeeper_pkg_url = var.xs_gatekeeper_pkg_url
-  xs_deployment_key = var.xs_deployment_key
-  xs_domain = var.xs_domain
+#   xs_gatekeeper_pkg_url = var.xs_gatekeeper_pkg_url
+#   xs_deployment_key = var.xs_deployment_key
+#   xs_domain = var.xs_domain
 
-  gk_lan_subnet = local.gk_subnet_cidr
-  gk_wan_subnet_id = module.vpc.private_subnet_id
+#   gk_lan_subnet = local.gk_subnet_cidr
+#   gk_wan_subnet_id = module.vpc.private_subnet_id
 
-  internal_sg_id = aws_security_group.internal_sg.id
-  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-}
+#   internal_sg_id = aws_security_group.internal_sg.id
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
 
-module "agentless_devices" {
+# module "agentless_devices" {
 
-  source = "./modules/devices"
+#   source = "./modules/devices"
 
-  ami = data.aws_ami.ubuntu_22_04.id
-  owner_name = local.owner_name
-  name_prefix = "${local.name_prefix}-gk"
-  hostname_prefix = "${local.hostname_prefix}gk"
-  dependency = module.vpc.nat_is_ready
-  key_name = local.key_name
+#   ami = data.aws_ami.ubuntu_22_04.id
+#   owner_name = local.owner_name
+#   name_prefix = "${local.name_prefix}-gk"
+#   hostname_prefix = "${local.hostname_prefix}gk"
+#   dependency = module.vpc.nat_is_ready
+#   key_name = local.key_name
 
-  gk_lan_subnet_id = module.gatekeeper.gk_lan_subnet_id
-  device_ip_prefix = local.prd_gk_device_prefix
-  device_count = local.prd_gk_device_count
-  gk_lan_ip = local.prd_gk_lan_ip
-  gk_lan_default_gw = local.prd_gk_lan_default_gw
+#   gk_lan_subnet_id = module.gatekeeper.gk_lan_subnet_id
+#   device_ip_prefix = local.prd_gk_device_prefix
+#   device_count = local.prd_gk_device_count
+#   gk_lan_ip = local.prd_gk_lan_ip
+#   gk_lan_default_gw = local.prd_gk_lan_default_gw
 
-  internal_sg_id = aws_security_group.internal_sg.id
-  ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
-}
+#   internal_sg_id = aws_security_group.internal_sg.id
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
 
-resource "aws_route" "gk_devices_route" {
-  route_table_id         = module.vpc.private_subnet_rt_id
-  destination_cidr_block = local.gk_subnet_cidr
-  network_interface_id   = module.gatekeeper.gk_wan_interface_id
-}
+# resource "aws_route" "gk_devices_route" {
+#   route_table_id         = module.vpc.private_subnet_rt_id
+#   destination_cidr_block = local.gk_subnet_cidr
+#   network_interface_id   = module.gatekeeper.gk_wan_interface_id
+# }
