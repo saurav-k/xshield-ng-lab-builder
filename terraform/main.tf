@@ -1,5 +1,4 @@
 locals {
-
     aws_region = "us=east-1"
     name_prefix = "${var.owner}-${var.lab_name}-${var.loc_name}"
     bucket_name_prefix = "${var.bucket_owner}-${var.lab_name}-${var.loc_name}"
@@ -9,6 +8,8 @@ locals {
 
     key_name   = "xshield-lab-builder-${var.owner}"
     owner_name = "xshield-lab-builder-${var.owner}"
+    rds_db_name = "default_db"
+    rds_db_username = "suitecrmadmin"
 
     # VPC
     vpc_cidr_prefix = "10.0"
@@ -19,6 +20,7 @@ locals {
 
     private_subnet_prefix = "${local.vpc_cidr_prefix}.20"
     private_subnet_cidr   = "${local.private_subnet_prefix}.0/26"
+    private_subnet_2_cidr   = "${local.vpc_cidr_prefix}.21.0/26"
 
     gk_subnet_prefix      = "${local.vpc_cidr_prefix}.30"
     gk_subnet_cidr        = "${local.gk_subnet_prefix}.0/24"
@@ -94,6 +96,7 @@ module "vpc" {
 
     public_subnet = local.public_subnet_cidr
     private_subnet = local.private_subnet_cidr
+    private_subnet_2 = local.private_subnet_2_cidr
 }
 
 module "vpc-logs-to-s3" {
@@ -255,7 +258,8 @@ module "infra" {
   #   ]
 
     depends_on = [
-      module.prd_crm.crm_public_ip,
+      # module.prd_crm.crm_public_ip, 
+      module.prd_crm_with_rds.crm_public_ip,
     ]
 
     # depends_on = [
@@ -370,17 +374,55 @@ module "web_gw" {
 #   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
 # }
 
-module "prd_crm" {
+# module "prd_crm" {
 
-  source = "./modules/suitecrm"
+#   source = "./modules/suitecrm"
+
+#   ami = data.aws_ami.ubuntu_22_04.id
+#   owner_name = local.owner_name
+#   password = random_password.password.result
+#   name_prefix = "${local.name_prefix}-prd-crm"
+#   hostname_prefix = "${local.hostname_prefix}prdcrm"
+#   dependency = module.vpc.nat_is_ready
+#   subnet_id = module.vpc.private_subnet_id
+#   key_name = local.key_name
+
+#   app_server_count = 1 # changed to 1 from 3 
+
+#   web_ip = local.prd_crm_web_ip
+#   app_ip_prefix = local.prd_crm_app_prefix
+#   db_ip = local.prd_crm_db_ip
+#   siem_ip = local.siem_ip
+#   assetmgr_ip = local.asset_mgr_ip
+#   xs_domain = var.xs_domain
+#   xs_deployment_key = var.xs_deployment_key
+#   xs_agent_debian_pkg_url = var.xs_agent_debian_pkg_url
+#   legacy_db_ip_prefix = local.prd_gk_device_prefix
+#   legacy_db_count = local.prd_gk_device_count
+
+#   internal_sg_id = aws_security_group.internal_sg.id
+#   ssm_instance_profile_name = aws_iam_instance_profile.ssm_instance_profile.name
+# }
+
+module "prd_crm_with_rds" {
+
+  source = "./modules/suitecrmrds"
+
+  rds_db_username = local.rds_db_username
+  rds_db_password = random_password.password.result
+  rds_db_name = local.rds_db_name 
+  web_gateway_ip = module.web_gw.web_gateway_ip
 
   ami = data.aws_ami.ubuntu_22_04.id
   owner_name = local.owner_name
   password = random_password.password.result
+  crm_password = random_password.password.result
   name_prefix = "${local.name_prefix}-prd-crm"
   hostname_prefix = "${local.hostname_prefix}prdcrm"
-  dependency = module.vpc.nat_is_ready
-  subnet_id = module.vpc.private_subnet_id
+  dependency  = module.vpc.nat_is_ready
+  subnet_id   = module.vpc.private_subnet_id
+
+  subnet_ids = module.vpc.private_subnet_ids
   key_name = local.key_name
 
   app_server_count = 1 # changed to 1 from 3 

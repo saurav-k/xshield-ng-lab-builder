@@ -53,13 +53,22 @@ resource "aws_subnet" "public_subnet" {
 
 # Private subnets
 resource "aws_subnet" "private_subnet" {
-
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = var.private_subnet
   availability_zone = data.aws_availability_zones.available.names.0
 
   tags = {
     Name = "${var.name_prefix}-private-subnet"
+  }
+}
+
+resource "aws_subnet" "private_subnet_2" {
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.private_subnet_2
+  availability_zone = data.aws_availability_zones.available.names.1
+
+  tags = {
+    Name = "${var.name_prefix}-private-subnet-2"
   }
 }
 

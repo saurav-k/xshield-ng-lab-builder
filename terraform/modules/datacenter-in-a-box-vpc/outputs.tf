@@ -13,6 +13,16 @@ output "private_subnet_id" {
     value = aws_subnet.private_subnet.id
 }
 
+output "private_subnet_id_2" {
+    description = "The first private subnet id"
+    value = aws_subnet.private_subnet_2.id
+}
+
+output "private_subnet_ids" {
+    description = "The first private subnet name"
+    value = tolist([ aws_subnet.private_subnet.id, aws_subnet.private_subnet_2.id ])
+}
+
 output "nat_is_ready" {
     description = "The NAT GW is ready!"
     value = "${null_resource.nat_ready.id}"

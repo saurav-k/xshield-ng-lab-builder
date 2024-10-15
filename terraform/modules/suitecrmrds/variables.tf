@@ -1,3 +1,33 @@
+variable "web_gateway_ip" {
+    type = string
+    description = "web_gateway_ip"
+}
+variable "rds_db_username" {
+  description = "rds_db_username is admin username for rds"
+  type = string
+}
+
+variable "subnet_ids" {
+    description = "subnet_ids list"
+    type = list(string)
+  
+}
+
+variable "rds_db_password" {
+  description = "rds_db_password is admin password for rds"
+  type = string
+}
+
+variable "crm_password" {
+    description = "crm_password "
+    type = string
+  
+}
+variable "rds_db_name" {
+  description = "rds_db_name is default db name for rds"
+  type = string
+}
+
 variable "key_name" {
     description = "Key name for instance creation"
     type = string
