@@ -130,6 +130,7 @@ def exec_api(api, method, body=None):
 
     # Add the signature to the headers
     headers_with_signature = create_signature(url, method, headers, req_body)
+    print(f"headers_with_signature --- {headers_with_signature}")
 
     # Send the request with the signed headers and body
     api_req = getattr(requests, str.lower(method))

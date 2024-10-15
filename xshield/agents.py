@@ -11,6 +11,7 @@ from ngapi import exec_api
 # Load configuration from file
 with open('config.json') as config_file:
     config = json.load(config_file)
+    print(f"config --- {config}")
 
 domain = config["domain"]
 
@@ -22,9 +23,13 @@ deployment_key_api = 'api/deployment-keys'
 # host_platform := darwin | debian | rpm | windows | iso | ova
 # host_arch := arm64 | x86_64 | ppc
 #
+
 def get_agent_installer(agent_type, host_platform, host_arch):
+    print(f"agent_version_api -- {agent_version_api}")
 
     resp = exec_api(agent_version_api, 'GET')
+    print("Printing resp")
+    print(resp)
     if resp.ok:
         versions = resp.json().get('versions')
         for v in versions:

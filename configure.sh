@@ -42,8 +42,11 @@ EOC
 
 owner=$(grep "^owner" config.txt | cut -d "=" -f2)
 deployment_key=$(cd xshield && python3 -c "import agents;print(agents.get_deployment_key())")
+
 gk_pkg=$(cd xshield && python3 -c "import agents;print(agents.get_agent_installer('CT_GATEWAY', 'debian', 'x86_64'))")
+
 deb_pkg=$(cd xshield && python3 -c "import agents;print(agents.get_agent_installer('CT_AGENT', 'debian', 'x86_64'))")
+
 win_pkg=$(cd xshield && python3 -c "import agents;print(agents.get_agent_installer('CT_AGENT', 'windows', 'x86_64'))")
 
 if [ -z "$owner" ] || [ -z "$deployment_key" ] || [ -z "$gk_pkg" ] || [ -z "$deb_pkg" ] || [ -z "$win_pkg" ]; then

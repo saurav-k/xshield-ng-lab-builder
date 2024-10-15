@@ -20,6 +20,13 @@ variable "owner" {
     }
 }
 
+variable "bucket_owner" {
+    description = "Your nickname or initials - to identify your AWS resources"
+    type = string
+    default = "saurav-kumar"
+    nullable = false
+}
+
 variable "windows_instance_type" {
     description = "EC2 instance type for Windows VMs"
     type = string

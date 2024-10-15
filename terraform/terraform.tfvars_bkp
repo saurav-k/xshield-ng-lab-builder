@@ -1,0 +1,52 @@
+owner = "saurav.kumar@colortokens.com"
+xs_domain = "https://ng-dev.colortokens.com"
+
+xs_deployment_key = <<EOF
+config --- {
+  'domain': 'https://ng-dev.colortokens.com',
+  'tenantId': 'a3fd1c7e-bcfb-4a22-aa93-cf16166590ea',
+  'userId': 'c7e62fdd-1ce0-4fcc-875f-11feb41edc5f',
+  'keyConfig': {
+    'fingerprint': '5a:bc:08:2d:f3:2f:43:b8:47:3d:64:77:79:b6:95:1a',
+    'privateKey': 'colortokens_api_key.pem',
+    'passphrase': ''
+  }
+}
+headers_with_signature --- {
+  'Authorization': 'Signature version="1",keyId="a3fd1c7e-bcfb-4a22-aa93-cf16166590ea::c7e62fdd-1ce0-4fcc-875f-11feb41edc5f::5a:bc:08:2d:f3:2f:43:b8:47:3d:64:77:79:b6:95:1a",algorithm="rsa-sha256",headers="(request-target) date host",signature="b5aw5tNNcCD5LVDwFCBQOkFccn03FFjyJLOLRRrCTFNXlpNZdI0oBmzH8RA5t+3mldm0mQKk/37SHu+GOWMcejiJZUsYfDKmD9GMGfX2n9vZDhBGUNG1KF4vt8H70/3DdUwRnuFiEn+zqfCvD7vd0nKi223m+LURBpCz9TiumHwrlm5IycnbKJqD6rS2O8Nz4WvYd7wGyoWFtrjFvalQe1nLIwuaa+ziJUkg+oY+NnHFCyHDhQX8UnIcObNPnm8JoBUIIq7A56yOTgg/F3MB7mZe4roTYwDn5Db9WYYuDP/oSZOKkwhmaryHLHJmWb2/5j6k6d3PU/jC1mRsa2ayavUxee+LOyZ8lC1Y5UiSYCQ0FlRZCD+TP+h4uSV0Td674dlYeATEF7HTxutLLuzN9SvDHpC+Kj0mJ2UBchpzXmMTSzEsR6TrGjKq7s6T0XUqFSQVEtoS2Pw9fxe3wnp8vzW5dak2xi+vpdv2HxTF6wbscnAP3Xu2wA9/MwBFltWBlLkqDo9rAfcDy1tsY4EDYqsvyYz7TxSzeQ4/jHOA9k6lik7EaTGHSwTkUMba0/bsxy7ToS8xLCJ1Oh8HLPem4ICjf7+UtDIeAPZlva8mhy4G3I0YyRNWm3QlUg+oIiCaDUrlS01paiNDO5l7Wy8ENu0s5Wa6efqmVpOYS+xtis0"',
+  'host': 'ng-dev.colortokens.com',
+  'date': 'Tue, 08 Oct 2024 12:21:21 GMT'
+}
+EOF
+
+xs_gatekeeper_pkg_url = <<EOF
+config --- {
+  'domain': 'https://ng-dev.colortokens.com',
+  'tenantId': 'a3fd1c7e-bcfb-4a22-aa93-cf16166590ea',
+  'userId': 'c7e62fdd-1ce0-4fcc-875f-11feb41edc5f',
+  'keyConfig': {
+    'fingerprint': '5a:bc:08:2d:f3:2f:43:b8:47:3d:64:77:79:b6:95:1a',
+    'privateKey': 'colortokens_api_key.pem',
+    'passphrase': ''
+  }
+}
+agent_version_api -- api/agents/versions
+headers_with_signature --- {
+  'Authorization': 'Signature version="1",keyId="a3fd1c7e-bcfb-4a22-aa93-cf16166590ea::c7e62fdd-1ce0-4fcc-875f-11feb41edc5f::5a:bc:08:2d:f3:2f:43:b8:47:3d:64:77:79:b6:95:1a",algorithm="rsa-sha256",headers="(request-target) date host",signature="CuqCHVhId9dGk8jnEwNBNBsOzniZYT/hBlVDoNv7JsnPRYIo1TYfcUB4k/3OCFLkrdgBkfP+1L9lL/btWDwkQaqhB9UrXcrxI0oT/AUBTDInmkSWWfYwCexDulugf6jvlc87vleYLppyGqHcCnGFe2yLWxn9P8tyXbM5luWDUYooROAvIjxgkqxD+JX5snFn/EU51AMH/VuVC5ae6qpoTxybHnItGFmn9Tv+4h8zGlFE4p5mdx/at0/vJMqcOTvIxWR/B23GUhMV+B5YLhqJTfSYUdByq90l+JDSbn/opooIkm05OOLhEFTcT3YlIdPoRz1CFIbnKqUZM46tESm2Rdw8SU7CJsLStNMjyVD1egr2RneXaK1ra8op92AQJ/4ptCmH4Oronj2cFYjnt7NmwLp6fiZ5jRPx6X0Y6VvJAC8GAZHLVHrdSOJn7jS0JBaxiKrqiODWkNUKEOhyoKELvPW8pAmLjyzf8TAVvR8NQZVTMtmmgHQtWoJrdbMJdaKlBIXGmVzacmzcJHrIWZ5L6C3BCav2CU3of/dBmVS6LcQFo3JFrUXqDIp/AgH10uFhhMUebsUZEiQlRFySlc9gyWcsgoVW9Hhf+165A8bjbyGlcBOgm2BR9wcQHtyMwjYosHaHJORX5o74wyR3Pv+41DNHRNtXsmQ+J2vFiis5W50'}
+EOF
+
+xs_agent_debian_pkg_url = <<EOF
+config --- {
+  'domain': 'https://ng-dev.colortokens.com',
+  'tenantId': 'a3fd1c7e-bcfb-4a22-aa93-cf16166590ea',
+  'userId': 'c7e62fdd-1ce0-4fcc-875f-11feb41edc5f',
+  'keyConfig': {
+    'fingerprint': '5a:bc:08:2d:f3:2f:43:b8:47:3d:64:77:79:b6:95:1a',
+    'privateKey': 'colortokens_api_key.pem',
+    'passphrase': ''
+  }
+}
+agent_version_api -- api/agents/versions
+headers_with_signature --- {
+  'Authorization': 'Signature version="1",keyId="a3fd1c7e-bcfb-4a22-aa93-cf16166590ea::c7e62fdd-1ce0-4fcc-875f-11feb41edc5f::5a:bc:08:2d:f3:2f:43:b8:47:3d:64:77:79:b6:95:1a",algorithm="rsa-sha256",headers="(request-target) date host",signature="P2kDezaAR74F2HKy1OgIcx23qD/n/mOF4PT/FMR7OTEkx4I8ikO7gmHFP9vBzIOVhapfMAeSC1n3M8zpO4Euxy4FPt1rEyT6rcWfq5KASSY0G9/oSsiwBz4h7SmOCccwFP80IF9CbBWBlO4hJEmqq8jvYZRHJKMrkPgR1hbt
+EOF
